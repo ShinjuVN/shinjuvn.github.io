@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ủng Hộ — Shinju Ch.</title>
+  <link rel="stylesheet" href="/Donate/css/style.css" />
+</head>
+<body>
+  <main class="page">
+    <h1 class="page-title" data-title>Ủng Hộ Shinju Ch.</h1>
+
+    <div class="method-list" data-method-list></div>
+
+    <footer class="site-footer" data-footer></footer>
+  </main>
+
+  <!-- Overlay shown for both QR and Link donate methods -->
+  <div class="overlay" data-overlay hidden>
+    <div class="overlay-card" data-overlay-card role="dialog" aria-modal="true">
+      <h2 class="overlay-label" data-overlay-label></h2>
+
+      <!-- QR variant -->
+      <div class="overlay-qr" data-overlay-qr hidden>
+        <img data-overlay-qr-img src="" alt="Mã QR donate" />
+        <div class="overlay-actions">
+          <a class="overlay-btn primary" data-overlay-save download>Lưu</a>
+          <button type="button" class="overlay-btn" data-overlay-back>Quay lại</button>
+        </div>
+      </div>
+
+      <!-- Link variant -->
+      <div class="overlay-link" data-overlay-link hidden>
+        <a class="overlay-link-box" data-overlay-link-href></a>
+        <div class="overlay-actions">
+          <button type="button" class="overlay-btn primary" data-overlay-open>Mở</button>
+          <button type="button" class="overlay-btn" data-overlay-back-link>Quay lại</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/Donate/js/main.js"></script>
+</body>
+</html>

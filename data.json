@@ -1,0 +1,24 @@
+{
+  "profile": {
+    "name": "Shinju Ch.",
+    "avatar": "/assets/avatar.png",
+    "statusColor": "#3ddc3d"
+  },
+  "buttons": [
+    {
+      "id": "social",
+      "icon": "youtube",
+      "url": "channel",
+      "style": "blue",
+      "label": "Mạng Xã Hội"
+    },
+    {
+      "id": "donate",
+      "icon": "ticket",
+      "url": "donate",
+      "style": "green",
+      "label": "Donate Tại Đây"
+    }
+  ],
+  "footer": "© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved."
+}

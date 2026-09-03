@@ -1,0 +1,187 @@
+:root {
+    --bg-deep: #050b16;
+    --bg-mid: #0c1a2e;
+    --card-cream: #f4ecd8;
+    --blue-btn-1: #1f6fd6;
+    --blue-btn-2: #1450a3;
+    --green-btn-1: #3fce3f;
+    --green-btn-2: #1f9a2f;
+    --dot-online: #3ddc3d;
+    --text-cream: #f4ecd8;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    font-family: "Baloo 2", "Comic Sans MS", "Segoe UI", sans-serif;
+    color: var(--text-cream);
+    background: radial-gradient(ellipse at 30% 10%, var(--bg-mid) 0%, var(--bg-deep) 65%);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ---------- Background image ----------
+   Uses a different image per device tier so each aspect ratio gets
+   art tailored to it. background-size: cover scales the image up
+   only as needed to fill the screen and crops the overflow — it
+   never stretches/distorts the picture, regardless of the device's
+   own aspect ratio.
+   Drop your real artwork in /assets/ using these same file names:
+   bgphone.png, bgpad.png, bgpc.png. */
+body {
+    background-image: url("/assets/bg/bgpc.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@media (max-width: 600px) {
+    body {
+        background-image: url("/assets/bg/bgphone.png");
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    body {
+        background-image: url("/assets/bg/bgpad.png");
+    }
+}
+
+.page {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 32px;
+}
+
+/* ---------- Avatar ---------- */
+.avatar-wrap {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    margin-bottom: 22px;
+}
+
+    .avatar-wrap img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+.status-dot {
+    position: absolute;
+    right: 6px;
+    bottom: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--dot-online);
+    border: 3px solid var(--bg-deep);
+}
+
+.display-name {
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0 0 26px;
+    text-align: center;
+    color: var(--text-cream);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+/* ---------- Link buttons ---------- */
+.link-list {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 700;
+    color: #eaf3ff;
+    border: 2px solid rgba(255,255,255,0.35);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .link-btn:hover,
+    .link-btn:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .link-btn:active {
+        transform: translateY(0);
+    }
+
+    .link-btn.blue {
+        background: linear-gradient(180deg, var(--blue-btn-1), var(--blue-btn-2));
+    }
+
+    .link-btn.green {
+        background: linear-gradient(180deg, var(--green-btn-1), var(--green-btn-2));
+        color: #f4fff0;
+    }
+
+.link-icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .link-icon svg {
+        width: 100%;
+        height: 100%;
+    }
+
+/* ---------- Footer ---------- */
+.site-footer {
+    margin-top: auto;
+    padding-top: 64px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(244, 236, 216, 0.75);
+}
+
+@media (max-width: 420px) {
+    .display-name {
+        font-size: 26px;
+    }
+
+    .link-btn {
+        font-size: 17px;
+    }
+
+    .avatar-wrap {
+        width: 140px;
+        height: 140px;
+    }
+}

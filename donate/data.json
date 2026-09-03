@@ -1,0 +1,40 @@
+{
+  "title": "Ủng Hộ Shinju Ch.",
+  "methods": [
+    {
+      "id": "ganknow",
+      "label": "Ganknow",
+      "buttons": [
+        {
+          "id": "ganknow",
+          "type": "link",
+          "url": "https://ganknow.com/ShinjuVNer"
+        }
+      ]
+    },
+    {
+      "id": "vn-banking",
+      "label": "Internet Banking VN",
+      "buttons": [
+        {
+          "id": "vietcombank",
+          "label": "Vietcombank",
+          "type": "qr",
+          "qr": "/assets/donate/vietcombank-qr.png"
+        }
+      ]
+    },
+    {
+      "id": "momo",
+      "label": "Ví điện tử MoMo",
+      "buttons": [
+        {
+          "id": "momo",
+          "type": "link",
+          "url": "https://nhantien.momo.vn/0344284334"
+        }
+      ]
+    }
+  ],
+  "footer": "© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved."
+}
