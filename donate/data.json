@@ -20,7 +20,7 @@
           "id": "vietcombank",
           "label": "Vietcombank",
           "type": "qr",
-          "qr": "/assets/donate/vietcombank-qr.png"
+          "qr": "/assets/donate/vietcombank-qr.webp"
         }
       ]
     },
