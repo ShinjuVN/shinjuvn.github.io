@@ -39,7 +39,7 @@ function setupOverlay() {
             qrBox.hidden = false;
             linkBox.hidden = true;
             qrImg.src = method.qr;
-            const filename = (method.id || "donate") + "-qr.png";
+            const filename = (method.id || "donate") + "-qr.webp";
             saveBtn.href = method.qr;
             saveBtn.setAttribute("download", filename);
         } else if (method.type === "link") {
