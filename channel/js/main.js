@@ -6,7 +6,7 @@
 */
 
 async function loadData() {
-  const res = await fetch("/Channel/data.json", { cache: "no-store" });
+  const res = await fetch("/channel/data.json", { cache: "no-store" });
   if (!res.ok) throw new Error("Could not load Channel/data.json");
   return res.json();
 }
