@@ -6,7 +6,7 @@
 */
 
 async function loadData() {
-    const res = await fetch("/Donate/data.json", { cache: "no-store" });
+    const res = await fetch("/donate/data.json", { cache: "no-store" });
     if (!res.ok) throw new Error("Could not load Donate/data.json");
     return res.json();
 }
