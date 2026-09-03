@@ -25,7 +25,7 @@ body {
     /* Same universe background as the rest of the site, auto-swapped
      per device. background-size: cover never stretches the image —
      it only crops overflow to match the screen's aspect ratio. */
-    background-image: url("/assets/bg/bgpc.png");
+    background-image: url("/assets/bg/bgpc.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -33,13 +33,13 @@ body {
 
 @media (max-width: 600px) {
     body {
-        background-image: url("/assets/bg/bgphone.png");
+        background-image: url("/assets/bg/bgphone.webp");
     }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
     body {
-        background-image: url("/assets/bg/bgpad.png");
+        background-image: url("/assets/bg/bgpad.webp");
     }
 }
 
