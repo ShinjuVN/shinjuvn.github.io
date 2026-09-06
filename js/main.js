@@ -58,9 +58,16 @@ async function init() {
   try {
     const data = await loadData();
     render(data);
+    if (window.SiteLoading) {
+      window.SiteLoading.waitFor(data.profile && data.profile.avatar);
+      window.SiteLoading.ready();
+    }
   } catch (err) {
     console.error(err);
+    if (window.SiteLoading) window.SiteLoading.ready();
   }
 }
 
 init();
+
+

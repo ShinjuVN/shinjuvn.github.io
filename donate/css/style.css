@@ -25,7 +25,7 @@ body {
     /* Same universe background as the rest of the site, auto-swapped
      per device. background-size: cover never stretches the image —
      it only crops overflow to match the screen's aspect ratio. */
-    background-image: url("/assets/bg/bgpc.webp");
+    background-image: url("/assets/bg/bgpc.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -33,13 +33,36 @@ body {
 
 @media (max-width: 600px) {
     body {
-        background-image: url("/assets/bg/bgphone.webp");
+        background-image: url("/assets/bg/bgphone.png");
     }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
     body {
-        background-image: url("/assets/bg/bgpad.webp");
+        background-image: url("/assets/bg/bgpad.png");
+    }
+}
+
+/* Same soft vignette / breathing effect as the main page, for readability
+   and a bit of life over the background artwork. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 100%);
+    animation: bg-breathe 8s ease-in-out infinite;
+}
+
+@keyframes bg-breathe {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before {
+        animation: none;
     }
 }
 
@@ -108,14 +131,14 @@ body {
 
 .donate-btn {
     flex: 1 1 45%;
-    min-width: 140px;
-    padding: 14px 18px;
+    min-width: 130px;
+    padding: 11px 16px;
     border: 2px solid rgba(255,255,255,0.25);
     border-radius: 999px;
     background: linear-gradient(180deg, var(--green-1), var(--green-2));
     color: #f4fff0;
     font-family: inherit;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
@@ -125,8 +148,8 @@ body {
 /* A group with just one button keeps the original full-width look */
 .donate-btn-row .donate-btn:only-child {
     flex-basis: 100%;
-    font-size: 18px;
-    padding: 14px 22px;
+    font-size: 16px;
+    padding: 12px 18px;
 }
 
 .donate-btn:hover,
@@ -306,3 +329,5 @@ body {
         font-size: 16px;
     }
 }
+
+

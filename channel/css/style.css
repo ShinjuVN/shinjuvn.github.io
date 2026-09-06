@@ -23,7 +23,7 @@ body {
     /* Same universe background as the main site, auto-swapped per device
      below. background-size: cover scales without stretching/distorting —
      it only crops overflow to match the screen's aspect ratio. */
-    background-image: url("/assets/bg/bgpc.webp");
+    background-image: url("/assets/bg/bgpc.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -31,13 +31,13 @@ body {
 
 @media (max-width: 600px) {
     body {
-        background-image: url("/assets/bg/bgphone.webp");
+        background-image: url("/assets/bg/bgphone.png");
     }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
     body {
-        background-image: url("/assets/bg/bgpad.webp");
+        background-image: url("/assets/bg/bgpad.png");
     }
 }
 
@@ -286,11 +286,11 @@ body {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 14px 22px;
+    gap: 12px;
+    padding: 10px 16px;
     border-radius: 999px;
     text-decoration: none;
-    font-size: 19px;
+    font-size: 16px;
     font-weight: 700;
     color: #ffffff;
     border: 2px solid rgba(255,255,255,0.15);
@@ -336,8 +336,8 @@ body {
 }
 
 .link-icon {
-    width: 34px;
-    height: 34px;
+    width: 26px;
+    height: 26px;
     flex-shrink: 0;
     border-radius: 50%;
     display: flex;
@@ -372,8 +372,8 @@ body {
     }
 
     .link-btn {
-        font-size: 17px;
-        padding: 12px 18px;
+        font-size: 14px;
+        padding: 9px 14px;
     }
 
     .avatar-wrap {
@@ -381,3 +381,5 @@ body {
         height: 140px;
     }
 }
+
+

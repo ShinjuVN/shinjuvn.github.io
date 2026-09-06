@@ -20,7 +20,7 @@
           "id": "vietcombank",
           "label": "Vietcombank",
           "type": "qr",
-          "qr": "/assets/donate/vietcombank-qr.webp"
+          "qr": "/assets/donate/vietcombank-qr.png"
         }
       ]
     },
@@ -38,3 +38,4 @@
   ],
   "footer": "© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved."
 }
+

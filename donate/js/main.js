@@ -39,7 +39,8 @@ function setupOverlay() {
             qrBox.hidden = false;
             linkBox.hidden = true;
             qrImg.src = method.qr;
-            const filename = (method.id || "donate") + "-qr.webp";
+            const ext = (method.qr.match(/\.(\w+)$/) || [null, "png"])[1];
+            const filename = (method.id || "donate") + "-qr." + ext;
             saveBtn.href = method.qr;
             saveBtn.setAttribute("download", filename);
         } else if (method.type === "link") {
@@ -129,7 +130,10 @@ async function init() {
         render(data, overlayApi);
     } catch (err) {
         console.error(err);
+    } finally {
+        if (window.SiteLoading) window.SiteLoading.ready();
     }
 }
 
 init();
+

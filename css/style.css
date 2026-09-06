@@ -36,9 +36,9 @@ body {
    never stretches/distorts the picture, regardless of the device's
    own aspect ratio.
    Drop your real artwork in /assets/ using these same file names:
-   bgphone.webp, bgpad.webp, bgpc.webp. */
+   bgphone.png, bgpad.png, bgpc.png. */
 body {
-    background-image: url("/assets/bg/bgpc.webp");
+    background-image: url("/assets/bg/bgpc.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -46,13 +46,37 @@ body {
 
 @media (max-width: 600px) {
     body {
-        background-image: url("/assets/bg/bgphone.webp");
+        background-image: url("/assets/bg/bgphone.png");
     }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
     body {
-        background-image: url("/assets/bg/bgpad.webp");
+        background-image: url("/assets/bg/bgpad.png");
+    }
+}
+
+/* Soft vignette that darkens the edges a touch and breathes very gently,
+   so text/buttons stay readable over a busier background image without
+   hiding the artwork. Sits above the bg image, below the page content. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.45) 100%);
+    animation: bg-breathe 8s ease-in-out infinite;
+}
+
+@keyframes bg-breathe {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before {
+        animation: none;
     }
 }
 
@@ -116,11 +140,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 15px 18px;
+    gap: 9px;
+    padding: 11px 16px;
     border-radius: 999px;
     text-decoration: none;
-    font-size: 19px;
+    font-size: 16px;
     font-weight: 700;
     color: #eaf3ff;
     border: 2px solid rgba(255,255,255,0.35);
@@ -148,8 +172,8 @@ body {
     }
 
 .link-icon {
-    width: 26px;
-    height: 26px;
+    width: 21px;
+    height: 21px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -177,7 +201,8 @@ body {
     }
 
     .link-btn {
-        font-size: 17px;
+        font-size: 15px;
+        padding: 10px 14px;
     }
 
     .avatar-wrap {
@@ -185,3 +210,5 @@ body {
         height: 140px;
     }
 }
+
+
