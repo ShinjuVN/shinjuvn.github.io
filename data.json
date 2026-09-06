@@ -18,6 +18,13 @@
       "url": "donate",
       "style": "green",
       "label": "Donate Tại Đây"
+    },
+    {
+      "id": "posts",
+      "icon": "",
+      "url": "post",
+      "style": "red",
+      "label": "Bài Đăng"
     }
   ],
   "footer": "© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved."
