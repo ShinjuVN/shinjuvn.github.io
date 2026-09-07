@@ -3,21 +3,21 @@
     "id": "chao-mung",
     "title": "Chào mừng đến với blog của Shinju Ch.!",
     "photo": "photo/chao-mung.png",
-    "date": "20/08/2026",
+    "date": "21/12/2026",
     "visibility": "public"
   },
   {
     "id": "huong-dan-mau-mau-minecraft",
     "title": "Hướng dẫn dùng mã màu Minecraft trong bài viết",
     "photo": "photo/huong-dan-mau-mau-minecraft.png",
-    "date": "28/08/2026",
+    "date": "None",
     "visibility": "unlisted"
   },
   {
     "id": "livestream-tuan-nay",
     "title": "Lịch livestream tuần này + link donate nhanh",
     "photo": "photo/livestream-tuan-nay.png",
-    "date": "02/09/2026",
+    "date": "",
     "visibility": "private"
   }
 ]
