@@ -17,6 +17,6 @@ Tính năng &cđặc biệt&r nhất mà mình tâm đắc (và cũng là lý do
 
 Tiết kiệm được siêu nhiều thời gian, nhất là mấy dự án đồ án có cả đống ảnh minh họa.
 
-[Tải xuống Picture Lite tại đây nè](https://github.com/ShinjuVN/Picture-Lite/releases/#release-Picture-Lite-Install) <a href="https://github.com/ShinjuVN/Picture-Lite/releases/#release-Picture-Lite-Install">Tải xuống Picture Lite</a>
+[Tải xuống Picture Lite tại đây nè](https://github.com/ShinjuVN/Picture-Lite/releases/#release-Picture-Lite-Install) <a href="https://github.com/ShinjuVN/Picture-Lite/releases/#release-Picture-Lite-Install" class="btn">Tải xuống Picture Lite</a>
 
 Anh em cứ tải về xài thử rồi tối ưu lại mớ ảnh trên website cho mượt mà nha! Nếu thấy hữu ích thì cho mình xin 1 Star trên GitHub nhé &c<3&r
