@@ -11,7 +11,7 @@ Vì gặp đúng vấn đề đó nên mình đã tự tay viết ra một công
 
 Đây là một tool nén ảnh mã nguồn mở do chính mình (&1Shinju Ch.&r) phát triển, với mục tiêu ban đầu là tự dùng, sau là muốn chia sẻ cho anh em HSSV tụi mình cùng giảm dung lượng ảnh mà vẫn giữ được chất lượng nét căng. Picture Lite cân tốt các định dạng phổ biến như PNG, JPEG, lẫn WebP, kèm theo nhiều tùy chỉnh nén linh hoạt tùy theo nhu cầu của dự án.
 
-Tùy vào sở thích thì bạn có thể tải bản cài đặt qua file setup, hoặc tiện nhất là xài bản PictureLite-&oPortable&o.exe chạy trực tiếp luôn, không cần cài đặt rườm rà. <hr>
+Tùy vào sở thích thì bạn có thể tải bản cài đặt qua file setup, hoặc tiện nhất là xài bản PictureLite-&oPortable&r.exe chạy trực tiếp luôn, không cần cài đặt rườm rà. <hr>
 
 Tính năng &cđặc biệt&r nhất mà mình tâm đắc (và cũng là lý do chính mình làm ra nó) là khả năng quét và nén &l&otoàn bộ&r ảnh nằm trong thư mục nguồn web ngay trên máy tính của bạn. Tụi mình không cần phải cặm cụi ngồi tải từng tấm ảnh lên mấy trang nén online nữa rồi tải về còn phải đưa đúng vị trí mà còn tốn data khi ae mình thường là dùng 4g/5g. 
 
