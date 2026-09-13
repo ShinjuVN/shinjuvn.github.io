@@ -30,8 +30,8 @@
       "buttons": [
         {
           "id": "momo",
-          "type": "link",
-          "url": "https://nhantien.momo.vn/0344284334"
+          "type": "qr",
+          "qr": "/assets/donate/momo-qr.png"
         }
       ]
     }
