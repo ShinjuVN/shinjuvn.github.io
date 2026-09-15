@@ -14,3 +14,5 @@ Ghé kênh YouTube của mình tại [đây](https://www.youtube.com/@ShinjuVNer
 <a href="../donate/index.html" class="btn">Ủng hộ Shinju Ch.</a>
 
 Cảm ơn mọi người đã luôn theo dõi và ủng hộ!&c&l <3
+
+

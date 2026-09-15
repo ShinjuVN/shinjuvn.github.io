@@ -14,3 +14,5 @@ Nếu muốn ủng hộ nhanh cho buổi stream sắp tới, bấm nút bên dư
 <a href="../donate/index.html" class="btn">Donate Ngay</a>
 
 Hẹn gặp mọi người trong stream! &d&lLove you all&r
+
+

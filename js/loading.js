@@ -103,3 +103,4 @@
     // Safety net: never block the page forever if something goes wrong.
     setTimeout(finish, 8000);
 })();
+

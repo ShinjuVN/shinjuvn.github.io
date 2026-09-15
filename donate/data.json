@@ -8,7 +8,8 @@
         {
           "id": "ganknow",
           "type": "link",
-          "url": "https://ganknow.com/ShinjuVNer"
+          "url": "https://ganknow.com/ShinjuVNer",
+          "visible": true
         }
       ]
     },
@@ -20,7 +21,8 @@
           "id": "vietcombank",
           "label": "Vietcombank",
           "type": "qr",
-          "qr": "/assets/donate/vietcombank-qr.png"
+          "qr": "/assets/donate/vietcombank-qr.png",
+          "visible": true
         }
       ]
     },
@@ -31,11 +33,10 @@
         {
           "id": "momo",
           "type": "qr",
-          "qr": "/assets/donate/momo-qr.png"
+          "qr": "/assets/donate/momo-qr.jpg",
+          "visible": true
         }
       ]
     }
-  ],
-  "footer": "© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved."
+  ]
 }
-

@@ -44,8 +44,8 @@ function render(data) {
     });
   }
 
-  const footerEl = document.querySelector("[data-footer]");
-  if (footerEl) footerEl.textContent = data.footer;
+  // Footer text is now rendered globally by /js/site-chrome.js from
+  // the root data.json's "footer" field.
 }
 
 async function init() {
@@ -63,5 +63,7 @@ async function init() {
 }
 
 init();
+
+
 
 

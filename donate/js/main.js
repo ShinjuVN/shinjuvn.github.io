@@ -83,6 +83,12 @@ function render(data, overlayApi) {
     if (list) {
         list.innerHTML = "";
         (data.methods || []).forEach((method) => {
+            // visible: false hides that specific button (public/private
+            // toggle); omitted or true means shown. A group with zero
+            // visible buttons is skipped entirely, not shown empty.
+            const visibleButtons = (method.buttons || []).filter((btn) => btn.visible !== false);
+            if (!visibleButtons.length) return;
+
             const wrap = document.createElement("div");
             wrap.className = "method";
 
@@ -94,7 +100,7 @@ function render(data, overlayApi) {
             const row = document.createElement("div");
             row.className = "donate-btn-row";
 
-            (method.buttons || []).forEach((btn) => {
+            visibleButtons.forEach((btn) => {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "donate-btn";
@@ -103,10 +109,11 @@ function render(data, overlayApi) {
                     overlayApi.openForMethod({
                         ...btn,
                         // Overlay title: group name, plus the bank/option name when
-                        // a group has more than one button (e.g. "Internet Banking
-                        // VN — Vietcombank"); just the group name otherwise.
+                        // more than one button is actually shown in this group
+                        // (e.g. "Internet Banking VN — Vietcombank"); just the
+                        // group name otherwise.
                         label:
-                            method.buttons.length > 1 && btn.label
+                            visibleButtons.length > 1 && btn.label
                                 ? `${method.label} — ${btn.label}`
                                 : method.label,
                     })
@@ -119,8 +126,8 @@ function render(data, overlayApi) {
         });
     }
 
-    const footerEl = document.querySelector("[data-footer]");
-    if (footerEl) footerEl.textContent = data.footer;
+    // Footer text is now rendered globally by /js/site-chrome.js from
+    // the root data.json's "footer" field.
 }
 
 async function init() {
@@ -136,4 +143,6 @@ async function init() {
 }
 
 init();
+
+
 

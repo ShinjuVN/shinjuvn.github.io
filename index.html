@@ -6,6 +6,7 @@
   <title>Shinju Ch.</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="stylesheet" href="/css/loading.css" />
+  <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
@@ -17,6 +18,17 @@
   </div>
   <script src="/js/loading.js"></script>
 
+  <header class="site-header">
+    <a href="/index.html" class="site-header-logo" data-nav-home aria-label="Về trang chủ">
+      <img src="/assets/avatar.png" alt="Logo" data-nav-logo />
+    </a>
+    <div class="site-header-menu-wrap">
+      <button type="button" class="site-header-menu-btn" data-nav-menu-toggle aria-haspopup="true" aria-expanded="false" aria-label="Menu">☰</button>
+      <nav class="site-header-menu" data-nav-menu role="menu"></nav>
+    </div>
+  </header>
+  <script src="/js/site-chrome.js"></script>
+
   <main class="page">
     <div class="avatar-wrap">
       <img data-avatar src="" alt="Shinju Ch." />
@@ -27,12 +39,14 @@
 
     <div class="link-list" data-link-list></div>
 
-    <footer class="site-footer" data-footer></footer>
+    <footer class="site-footer" data-global-footer>© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved.</footer>
   </main>
 
   <script src="/js/icons.js"></script>
   <script src="/js/main.js"></script>
 </body>
 </html>
+
+
 
 
