@@ -83,12 +83,12 @@ body::before {
     margin: 0 auto;
 }
 
-.site-header {
+.blog-title-bar {
     text-align: center;
     margin-bottom: 26px;
 }
 
-    .site-header h1 {
+    .blog-title-bar h1 {
         margin: 0;
         font-size: 30px;
         font-weight: 800;
@@ -380,7 +380,7 @@ body::before {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 480px) {
-    .site-header h1 {
+    .blog-title-bar h1 {
         font-size: 24px;
     }
 
@@ -392,5 +392,3 @@ body::before {
         padding: 20px 16px 24px;
     }
 }
-
-
