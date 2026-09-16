@@ -1,0 +1,45 @@
+{
+  "profile": {
+    "name": "Shinju Ch.",
+    "avatar": "/assets/avatar.png",
+    "statusColor": "#3ddc3d"
+  },
+  "nav": {
+    "logo": "/assets/avatar.png",
+    "home": "/index.html",
+    "pages": [
+      { "label": "Trang chủ", "url": "/index.html" },
+      { "label": "Kênh", "url": "/channel/index.html" },
+      { "label": "Donate", "url": "/donate/index.html" },
+      { "label": "Bài Đăng", "url": "/post/index.html" }
+    ]
+  },
+  "buttons": [
+    {
+      "id": "social",
+      "icon": "youtube",
+      "url": "channel",
+      "style": "blue",
+      "label": "Mạng Xã Hội"
+    },
+    {
+      "id": "donate",
+      "icon": "ticket",
+      "url": "donate",
+      "style": "green",
+      "label": "Donate Tại Đây"
+    },
+    {
+      "id": "posts",
+      "icon": "",
+      "url": "post",
+      "style": "red",
+      "label": "Bài Đăng"
+    }
+  ],
+  "footer": "© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved."
+}
+
+
+
+

@@ -1,0 +1,23 @@
+{
+  "title": "File mẫu để test",
+  "requireAllAds": true,
+  "adButtons": [
+    {
+      "id": "ad1",
+      "label": "Xem quảng cáo 10s để ủng hộ tui :3",
+      "seconds": 10,
+      "categories": [ "Youtube", "Social Media" ]
+    },
+    {
+      "id": "ad2",
+      "label": "Xem thêm 1 quảng cáo nữa nhé",
+      "seconds": 5,
+      "categories": [ "Image" ]
+    }
+  ],
+  "download": {
+    "url": "https://drive.google.com/",
+    "label": "Tải Xuống",
+    "mode": "newTab"
+  }
+}

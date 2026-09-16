@@ -1,0 +1,22 @@
+{
+  "adLinks": [
+    {
+      "id": "yt-1",
+      "category": "Youtube",
+      "url": "https://www.youtube.com/@ShinjuVNer",
+      "expires": "inf"
+    },
+    {
+      "id": "social-1",
+      "category": "Social Media",
+      "url": "https://www.facebook.com/ShinjuVNer",
+      "expires": "31/12/2026"
+    },
+    {
+      "id": "image-1",
+      "category": "Image",
+      "url": "https://www.youtube.com/@ShinjuVNer",
+      "expires": "inf"
+    }
+  ]
+}
