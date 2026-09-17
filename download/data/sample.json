@@ -1,6 +1,6 @@
 {
   "title": "File mẫu để test",
-  "requireAllAds": true,
+  "requireAllAds": false,
   "adButtons": [
     {
       "id": "ad1",
@@ -10,7 +10,7 @@
     },
     {
       "id": "ad2",
-      "label": "Xem thêm 1 quảng cáo nữa nhé",
+      "label": "Có thể xem thêm nha!",
       "seconds": 5,
       "categories": [ "Image" ]
     }
@@ -18,6 +18,6 @@
   "download": {
     "url": "https://drive.google.com/",
     "label": "Tải Xuống",
-    "mode": "newTab"
+    "mode": "Direct"
   }
 }
