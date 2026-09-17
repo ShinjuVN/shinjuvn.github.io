@@ -18,6 +18,6 @@
   "download": {
     "url": "https://drive.google.com/",
     "label": "Tải Xuống",
-    "mode": "Direct"
+    "mode": "newTab"
   }
 }
