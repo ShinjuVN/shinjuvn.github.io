@@ -1,0 +1,172 @@
+:root {
+  --accent-1: #4f7cff;
+  --accent-2: #3a5cd6;
+  --green-1: #2fb344;
+  --green-2: #1f8a32;
+  --text-main: #1a1d29;
+  --text-sub: #667085;
+  --card-bg: #ffffff;
+  --page-bg: #f4f6fb;
+  --border: #e6e8f0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--page-bg);
+  color: var(--text-main);
+  font-family: "Segoe UI", "Baloo 2", system-ui, -apple-system, sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.msg-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(20, 25, 50, 0.08);
+}
+
+.msg-icon {
+  font-size: 42px;
+  margin: 0 0 12px;
+  line-height: 1;
+}
+
+.msg-title {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--text-main);
+}
+
+.msg-sub {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.6;
+}
+
+/* ---------- Redirecting state ---------- */
+.spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 18px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent-1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}
+
+.fallback-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--accent-1);
+  text-decoration: none;
+}
+
+.fallback-link:hover,
+.fallback-link:focus-visible {
+  text-decoration: underline;
+}
+
+/* ---------- Success state ---------- */
+.success-card .msg-icon {
+  font-size: 48px;
+}
+
+.code-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f7f8fc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.code-box code {
+  flex: 1;
+  text-align: left;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  word-break: break-all;
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--accent-1), var(--accent-2));
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.copy-btn:hover,
+.copy-btn:focus-visible {
+  transform: translateY(-1px);
+}
+
+.copy-btn:active {
+  transform: translateY(0);
+}
+
+.copy-btn.copied {
+  background: linear-gradient(180deg, var(--green-1), var(--green-2));
+}
+
+@media (max-width: 420px) {
+  .msg-card {
+    padding: 28px 20px;
+    border-radius: 16px;
+  }
+
+  .msg-title {
+    font-size: 18px;
+  }
+
+  .code-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .copy-btn {
+    width: 100%;
+  }
+}
