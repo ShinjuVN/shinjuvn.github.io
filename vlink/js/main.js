@@ -74,7 +74,7 @@ function showSuccess(code) {
     <div class="msg-card success-card">
       <p class="msg-icon">🎁</p>
       <h1 class="msg-title">Nhận quà thành công!</h1>
-      <p class="msg-sub">Dùng lệnh sau trong Discord để nhận quà của bạn:</p>
+      <p class="msg-sub">Dùng lệnh sau trong Server để nhận quà của bạn :3</p>
       <div class="code-box">
         <code>/gift ${code}</code>
         <button type="button" class="copy-btn" data-copy-btn>Copy</button>
