@@ -16,7 +16,7 @@
 
 // Replace with your real Link4M API token from your Link4M dashboard —
 // the example token in Link4M's own docs is not a working credential.
-const LINK4M_API_TOKEN = "YOUR_LINK4M_API_TOKEN_HERE";
+const LINK4M_API_TOKEN = "6abc4a6ad55fa23da3099cb1";
 
 // Where the Link4M redirect should eventually land — derived
 // automatically from this page's own URL, so it's always correct
