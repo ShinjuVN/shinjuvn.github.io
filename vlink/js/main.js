@@ -16,7 +16,7 @@
 
 // Replace with your real Link4M API token from your Link4M dashboard —
 // the example token in Link4M's own docs is not a working credential.
-const LINK4M_API_TOKEN = "6abc4a6ad55fa23da3099cb1";
+const API_TOKEN = "dac93a2a8baabb96d179632d7a8099f4ac244580";
 
 // Where the Link4M redirect should eventually land — derived
 // automatically from this page's own URL, so it's always correct
@@ -74,7 +74,7 @@ function showSuccess(code) {
     <div class="msg-card success-card">
       <p class="msg-icon">🎁</p>
       <h1 class="msg-title">Nhận quà thành công!</h1>
-      <p class="msg-sub">Dùng lệnh sau trong Server để nhận quà của bạn :3</p>
+      <p class="msg-sub">Dùng lệnh sau trong Discord để nhận quà của bạn:</p>
       <div class="code-box">
         <code>/gift ${code}</code>
         <button type="button" class="copy-btn" data-copy-btn>Copy</button>
@@ -114,7 +114,7 @@ function main() {
       return;
     }
     const destination = DESTINATION_BASE + decoded;
-    const shortUrl = `https://link4m.co/st?api=${LINK4M_API_TOKEN}&url=${encodeURIComponent(destination)}`;
+      const shortUrl = `https://site2s.com/st?api=${API_TOKEN}&url=${encodeURIComponent(destination)}`;
     showRedirecting(shortUrl);
     return;
   }
