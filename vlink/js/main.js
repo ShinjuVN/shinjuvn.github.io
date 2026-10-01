@@ -25,7 +25,7 @@
 
 // Where to send people who land on /vlink with no code at all —
 // replace with your actual Minecraft server's quest/task page.
-const URL_CUSTOM = "../posts";
+const URL_CUSTOM = "../post";
 
 // Where the shortener's redirect should eventually land — derived
 // automatically from this page's own URL, so it's always correct
