@@ -25,7 +25,7 @@
 
 // Where to send people who land on /vlink with no code at all —
 // replace with your actual Minecraft server's quest/task page.
-const DISCORD_SERVER_GALAXY = "https://discord.gg/TQttgRxBy";
+const URL_CUSTOM = "../posts";
 
 // Where the shortener's redirect should eventually land — derived
 // automatically from this page's own URL, so it's always correct
@@ -85,8 +85,8 @@ function showNoQuestCode() {
     <div class="msg-card">
       <p class="msg-icon">🙈</p>
       <h1 class="msg-title">Ui ui :3</h1>
-      <p class="msg-sub">Tui chưa thấy mã nhiệm vụ nào cả, Quay lại sau nha!</p>
-      <a class="primary-btn" href="${DISCORD_SERVER_GALAXY}" target="_blank" rel="noopener noreferrer">Tham gia link Discord để nói chuyện phím!</a>
+      <p class="msg-sub">Tui chưa thấy mã chuyển hướng đến trang download nào cả đấy :< \nMở đúng link ik!</p>
+      <a class="primary-btn" href="${URL_CUSTOM}" target="_blank" rel="noopener noreferrer">Ghé qua trang Posts của tui!</a>
     </div>
   `);
 }
