@@ -121,6 +121,5 @@ date: "06/10/2026"
 ⚙️ &eCấu hình "Cỗ máy chiến game":&r
 - &fCPU:&r &bIntel Core i3 8135U&r | &fGPU:&r &bIntel UHD&r | &fRAM:&r &a12GB&r
 ```
-
 # &l&c💡 LỜI KHUYÊN QUAN TRỌNG VỀ NHIỆT ĐỘ:&r
 &fKhi stream trên laptop, máy sẽ phải chạy &c100% công suất&f liên tục. Khi nhiệt độ lên trên &c90°C&f, máy sẽ tự động giảm xung nhịp làm tụt FPS thê thảm. &a&lBẮT BUỘC&f phải kê cao đáy laptop để quạt hút gió thoáng, hoặc trang bị thêm đế tản nhiệt rời. Luôn test thử luồng live 15-30 phút ở chế độ &eUnlisted (Không công khai)&f trước khi lên sóng chính thức!&r
