@@ -1,7 +1,7 @@
 {
   "name": "Shinju Ch.",
   "short_name": "Shinju Ch.",
-  "description": "Trang cá nhân của Shinju Ch. (@ShinjuVNer): mạng xã hội, ủng hộ và các bài đăng mới.",
+  "description": "Trang cá nhân của Shinju Ch. \nMạng xã hội, ủng hộ và các bài đăng mới.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,8 +10,13 @@
   "lang": "vi",
   "icons": [
     {
-      "src": "/assets/favicon.png",
-      "sizes": "any",
+      "src": "/assets/favicon/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/favicon/favicon-512.png",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]

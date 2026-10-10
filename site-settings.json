@@ -18,13 +18,13 @@
     "message": "Trang web đang được cập nhật, vui lòng quay lại sau."
   },
   "theme": {
-    "default": "none",
+    "default": "snow",
     "pages": {
       "home": "",
-      "post": "",
-      "download": "",
-      "channel": "",
-      "donate": ""
+      "post": "fireflies",
+      "download": "aurora",
+      "channel": "stars",
+      "donate": "stars"
     }
   },
   "seo": {
@@ -32,14 +32,14 @@
     "siteName": "Shinju Ch.",
     "ogImage": "",
     "favicon": {
-      "icon": "/assets/favicon.png",
-      "apple": "",
-      "v": ""
+      "icon": "/assets/favicon/favicon-32.png?v=mv2ezum2",
+      "apple": "/assets/favicon/favicon-180.png?v=mv2ezum2",
+      "v": "mv2ezum2"
     },
     "pages": {
       "home": {
         "title": "Shinju Ch.",
-        "description": "Trang cá nhân của Shinju Ch. (@ShinjuVNer): mạng xã hội, ủng hộ và các bài đăng mới.",
+        "description": "Trang cá nhân của Shinju Ch. \nMạng xã hội, ủng hộ và các bài đăng mới.",
         "keywords": "Shinju Ch., ShinjuVNer, Shinju, mạng xã hội, blog"
       },
       "post": {
@@ -62,6 +62,26 @@
         "description": "Ủng hộ Shinju Ch. để duy trì và phát triển nội dung.",
         "keywords": "ủng hộ, donate, Shinju Ch."
       }
+    }
+  },
+  "telegram": {
+    "login": true,
+    "loginFail": true,
+    "views": {
+      "enabled": true,
+      "thresholds": [
+        100,
+        1000
+      ]
+    },
+    "downloads": {
+      "enabled": true,
+      "thresholds": [
+        50,
+        100,
+        500,
+        1000
+      ]
     }
   }
 }

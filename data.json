@@ -8,10 +8,22 @@
     "logo": "/assets/avatar.png",
     "home": "/index.html",
     "pages": [
-      { "label": "Trang chủ", "url": "/index.html" },
-      { "label": "Kênh", "url": "/channel/index.html" },
-      { "label": "Donate", "url": "/donate/index.html" },
-      { "label": "Bài Đăng", "url": "/post/index.html" }
+      {
+        "label": "Trang chủ",
+        "url": "/index.html"
+      },
+      {
+        "label": "Kênh",
+        "url": "/channel/index.html"
+      },
+      {
+        "label": "Donate",
+        "url": "/donate/index.html"
+      },
+      {
+        "label": "Bài Đăng",
+        "url": "/post/index.html"
+      }
     ]
   },
   "buttons": [
