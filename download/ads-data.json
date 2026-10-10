@@ -1,21 +1,27 @@
 {
   "adLinks": [
     {
-      "id": "yt-1",
-      "category": "Youtube",
-      "url": "https://www.youtube.com/@ShinjuVNer",
+      "id": "direct-link-monetag-1",
+      "category": "direct_link_monetag",
+      "url": "https://uplcm.com/4/11956866",
       "expires": "inf"
     },
     {
-      "id": "social-1",
-      "category": "Social Media",
-      "url": "https://www.facebook.com/ShinjuVNer",
-      "expires": "31/12/2026"
+      "id": "direct-link-monetag-2",
+      "category": "direct_link_monetag",
+      "url": "https://uplcm.com/4/11998732",
+      "expires": "inf"
     },
     {
-      "id": "image-1",
-      "category": "Image",
-      "url": "https://www.youtube.com/@ShinjuVNer",
+      "id": "direct-link-monetag-3",
+      "category": "direct_link_monetag",
+      "url": "https://uplcm.com/4/11998733",
+      "expires": "inf"
+    },
+    {
+      "id": "direct-link-monetag-4",
+      "category": "direct_link_monetag",
+      "url": "https://uplcm.com/4/11998734",
       "expires": "inf"
     }
   ]
