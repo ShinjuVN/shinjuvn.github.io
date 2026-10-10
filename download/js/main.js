@@ -1,0 +1,421 @@
+/* Shinju download page — download/js/main.js
+   URL: /download/<id>/  ->  fetches /download/data/<id>.json for this file's
+   config, plus the shared /download/ads-data.json pool.
+   No id / fetch failure -> redirect to the site's 404.
+
+   Ad-watch mechanism (Page Visibility API):
+   Clicking an ad button opens a random matching, non-expired link
+   from ads-data.json in a NEW TAB, then marks that button "active".
+   While this tab is hidden (document.hidden), time is NOT ticked live
+   (the page can't repaint while hidden anyway) — instead, the elapsed
+   hidden-time is added to that button's progress the moment the
+   person switches back to this tab. Progress accumulates across
+   multiple back-and-forth switches until it reaches the required
+   seconds. Only the most-recently-clicked, not-yet-done button
+   receives credit for a given hidden period — idly switching tabs
+   without ever clicking a button earns nothing.
+
+   Download buttons: a file can have MORE THAN ONE (e.g. a primary
+   link + a backup mirror) — see config.downloads below. All of them
+   share the same unlock condition (finish the required ads), and a
+   click on ANY of them counts as one "download" for the counter.
+*/
+
+const SITE_404 = "/404.html";
+
+// Self-hosted counter system (same one post/js/main.js uses): reads go
+// straight to GitHub's raw-content CDN, only the +1 "hit" goes through
+// the small Cloudflare Worker. See /counter-api-cf/README.md.
+// IMPORTANT: fill these in with your real values after following that
+// README — these are just placeholders.
+const COUNTERS_REPO_OWNER = "ShinjuVN";
+const COUNTERS_REPO_NAME = "api-counters";
+const COUNTERS_BRANCH = "main";
+const COUNTERS_RAW_BASE = `https://raw.githubusercontent.com/${COUNTERS_REPO_OWNER}/${COUNTERS_REPO_NAME}/${COUNTERS_BRANCH}`;
+const COUNTER_API_BASE = "https://n238.git-api.workers.dev";
+const COUNTER_TYPE = "download"; // matches a key in the Worker's COUNTER_TYPES env var
+
+// Id lấy từ đường dẫn /download/<id>/ (không dùng query ?f= nữa).
+function getFileId() {
+    const m = window.location.pathname.match(/^\/download\/([^\/.]+)\/?$/);
+    return m ? decodeURIComponent(m[1]) : null;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : String(str);
+    return div.innerHTML;
+}
+
+// `cache` defaults to "no-store" (used for the +1 request to the Worker).
+// Reads pass "default" because their URL already changes every minute.
+async function fetchWithTimeout(url, ms, cache = "no-store") {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    try {
+        return await fetch(url, { signal: controller.signal, cache });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+// How often a counter file is allowed to be re-fetched from GitHub's
+// raw CDN. The URL carries the current "time bucket" (?t=<n>), so:
+//   - within the same minute every read shares one cached copy (a page
+//     with many posts doesn't hammer raw.githubusercontent.com), and
+//   - the moment a new minute starts the URL is different, so neither
+//     the browser nor the CDN can answer with an older cached number.
+// Counters are only written about once a minute anyway, so a 60 s bucket
+// always shows the newest value that exists.
+const COUNTER_READ_BUCKET_MS = 60 * 1000;
+function counterReadUrl(id) {
+    const bucket = Math.floor(Date.now() / COUNTER_READ_BUCKET_MS);
+    return `${COUNTERS_RAW_BASE}/${COUNTER_TYPE}-${encodeURIComponent(id)}.json?t=${bucket}`;
+}
+
+
+async function getDownloadCount(id) {
+    try {
+        const res = await fetchWithTimeout(counterReadUrl(id), 4000, "default");
+        if (!res.ok) return 0;
+        const data = await res.json();
+        return data.downloads || 0;
+    } catch (e) {
+        return 0; // GitHub unreachable or too slow — don't break the page over it
+    }
+}
+
+async function hitDownloadCount(id) {
+    try {
+        const res = await fetchWithTimeout(
+            `${COUNTER_API_BASE}/hit/${COUNTER_TYPE}/${encodeURIComponent(id)}`,
+            4000
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.downloads;
+    } catch (e) {
+        return null; // Worker unreachable/cold-starting — the download itself still proceeds
+    }
+}
+
+/* ============================================================== */
+/* Data loading                                                     */
+/* ============================================================== */
+
+// Accepts either the current format (config.downloads: [...]) or the
+// older single-button format (config.download: {...}) for a smooth
+// upgrade — old data/<id>.json files don't need to be rewritten right
+// away, they just only ever show one button until you add more.
+function normalizeDownloads(config) {
+    if (Array.isArray(config.downloads) && config.downloads.length) {
+        return config.downloads;
+    }
+    if (config.download && config.download.url) {
+        return [{ id: "primary", ...config.download }];
+    }
+    return [];
+}
+
+async function loadFileConfig(id) {
+    const res = await fetch(`/download/data/${encodeURIComponent(id)}.json`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`config not found (HTTP ${res.status})`);
+
+    const text = await res.text();
+    let config;
+    try {
+        config = JSON.parse(text);
+    } catch (e) {
+        // JSON.parse can fail for two very different reasons: (1) the data
+        // file itself has a syntax error, or (2) some hosts (e.g. IIS with
+        // a custom 404 page set to responseMode="ExecuteURL") respond with
+        // status 200 and an error page's HTML instead of a real 404 — res.ok
+        // would be true even though this isn't real JSON. Report both
+        // possibilities rather than assuming one.
+        throw new Error(
+            `data/${id}.json is not valid JSON (check the file for a syntax error, or the server may have substituted an error page for a missing file): ${e.message}`
+        );
+    }
+
+    if (!config || typeof config !== "object") {
+        throw new Error("invalid download config");
+    }
+    const downloads = normalizeDownloads(config);
+    if (!downloads.length) {
+        throw new Error('invalid download config — need at least one entry in "downloads"');
+    }
+    config.downloads = downloads;
+    return config;
+}
+
+async function loadAdPool() {
+    try {
+        const res = await fetch("/download/ads-data.json", { cache: "no-store" });
+        if (!res.ok) return { adLinks: [] };
+        const data = await res.json();
+        return { adLinks: Array.isArray(data.adLinks) ? data.adLinks : [] };
+    } catch (e) {
+        return { adLinks: [] }; // shared pool unreachable -> every button falls back to "skip"
+    }
+}
+
+/* ============================================================== */
+/* Ad link selection                                                */
+/* ============================================================== */
+
+function isLinkValid(expires) {
+    if (!expires) return true;
+    const norm = String(expires).trim().toLowerCase();
+    if (norm === "inf" || norm === "infinity") return true;
+
+    const m = norm.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!m) {
+        console.warn(`download: unrecognized "expires" value "${expires}", treating link as expired`);
+        return false;
+    }
+    const [, dd, mm, yyyy] = m;
+    const expiryDate = new Date(Number(yyyy), Number(mm) - 1, Number(dd), 23, 59, 59);
+    return Date.now() <= expiryDate.getTime();
+}
+
+// Link có thể bị tắt thủ công (enabled: false) hoặc hẹn ngày bắt đầu (start: "dd/mm/yyyy") từ trang quản trị.
+function hasStarted(start) {
+    const m = String(start || "").match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return !m || Date.now() >= new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1])).getTime();
+}
+
+function pickAdLink(categories, pool) {
+    const wanted = new Set((categories || []).map((c) => c.toLowerCase()));
+    const matches = pool.adLinks.filter(
+        (link) => link.enabled !== false && hasStarted(link.start) && wanted.has(String(link.category || "").toLowerCase()) && isLinkValid(link.expires)
+    );
+    if (!matches.length) return null;
+    return matches[Math.floor(Math.random() * matches.length)];
+}
+
+/* ============================================================== */
+/* Per-button progress (sessionStorage — resets when the tab closes) */
+/* ============================================================== */
+
+function progressKey(fileId, buttonId) {
+    return `dl_progress_${fileId}_${buttonId}`;
+}
+
+function getProgress(fileId, buttonId) {
+    try {
+        const raw = sessionStorage.getItem(progressKey(fileId, buttonId));
+        if (!raw) return { seconds: 0, completed: false };
+        return JSON.parse(raw);
+    } catch (e) {
+        return { seconds: 0, completed: false };
+    }
+}
+
+function setProgress(fileId, buttonId, progress) {
+    try {
+        sessionStorage.setItem(progressKey(fileId, buttonId), JSON.stringify(progress));
+    } catch (e) {
+        // sessionStorage unavailable (private mode etc.) — progress just won't persist across reload
+    }
+}
+
+/* ============================================================== */
+/* Page logic                                                       */
+/* ============================================================== */
+
+async function main() {
+    const fileId = getFileId();
+    if (!fileId) {
+        window.location.href = SITE_404;
+        return;
+    }
+
+    let config;
+    try {
+        config = await loadFileConfig(fileId);
+    } catch (e) {
+        console.error(`download: could not load data/${fileId}.json —`, e.message);
+        window.location.href = SITE_404;
+        return;
+    }
+
+    const pool = await loadAdPool();
+    const root = document.getElementById("app");
+
+    // "hint" trong file json: chữ tự đặt; chuỗi rỗng = ẩn; không có = câu mặc định.
+    const hintText = typeof config.hint === "string" ? config.hint
+        : config.requireAllAds === false ? "Bạn có thể tải ngay. Nếu muốn ủng hộ mình, hãy bấm các nút bên dưới nhé!"
+        : "Xem quảng cáo bên dưới để ủng hộ mình, sau đó bấm Tải Xuống nhé!";
+    const downloadButtonsHtml = config.downloads
+        .map(
+            (dl, i) => `
+      <button type="button" class="download-btn locked" data-download-btn data-download-index="${i}" disabled>
+        🔒 <span>${escapeHtml(dl.label || (i === 0 ? "Tải Xuống" : `Link dự phòng ${i}`))}</span>
+      </button>`
+        )
+        .join("");
+
+    root.innerHTML = `
+    <div class="download-card">
+      <h1 class="download-title">${escapeHtml(config.title || "Tải xuống")}</h1>
+      ${hintText ? `<p class="download-hint">${escapeHtml(hintText)}</p>` : ""}
+      <div class="ad-button-list" data-ad-list></div>
+      <p class="download-count" data-download-count>⬇ …</p>
+      <div class="download-btn-list" data-download-list>${downloadButtonsHtml}</div>
+      <p class="download-note" data-download-note></p>
+    </div>
+  `;
+
+    if (window.SiteLoading) window.SiteLoading.ready();
+
+    // Show the current download count right away (read-only — never
+    // increments). The actual +1 only happens when a download button
+    // is really clicked, further down.
+    const downloadCountEl = document.querySelector("[data-download-count]");
+    getDownloadCount(fileId).then((count) => {
+        downloadCountEl.textContent = `⬇ ${count}`;
+    });
+
+    const adButtons = Array.isArray(config.adButtons) ? config.adButtons : [];
+    const requireAll = config.requireAllAds !== false; // default true unless explicitly false
+    const list = document.querySelector("[data-ad-list]");
+    const downloadBtns = Array.from(document.querySelectorAll("[data-download-btn]"));
+    const downloadNote = document.querySelector("[data-download-note]");
+
+    // in-memory view of each ad button's state, keyed by button id
+    const state = {};
+    let activeButtonId = null; // the ad button currently "earning" hidden-time
+    let hiddenSince = null;
+
+    function isButtonDone(btn) {
+        return state[btn.id].completed;
+    }
+
+    function checkUnlock() {
+        const unlocked = !requireAll || adButtons.every(isButtonDone);
+        downloadBtns.forEach((el) => {
+            const i = Number(el.getAttribute("data-download-index"));
+            const dl = config.downloads[i];
+            const label = escapeHtml(dl.label || (i === 0 ? "Tải Xuống" : `Link dự phòng ${i}`));
+            el.classList.toggle("locked", !unlocked);
+            el.classList.toggle("unlocked", unlocked);
+            el.disabled = !unlocked;
+            el.innerHTML = unlocked ? `<span>${label}</span>` : `🔒 <span>${label}</span>`;
+        });
+    }
+
+    function renderButtonUI(btn) {
+        const el = document.querySelector(`[data-btn-id="${btn.id}"]`);
+        if (!el) return;
+        const s = state[btn.id];
+        const statusEl = el.querySelector("[data-ad-status]");
+
+        el.classList.remove("in-progress", "completed", "skipped");
+        if (s.skipped) {
+            el.classList.add("skipped");
+            el.disabled = true;
+            statusEl.textContent = "Không khả dụng — đã bỏ qua";
+        } else if (s.completed) {
+            el.classList.add("completed");
+            el.disabled = true;
+            statusEl.textContent = "✅ Đã hoàn thành";
+        } else if (s.seconds > 0) {
+            el.classList.add("in-progress");
+            const remain = Math.max(0, btn.seconds - s.seconds);
+            statusEl.textContent = `Còn thiếu ${Math.ceil(remain)}s`;
+        } else {
+            statusEl.textContent = `${btn.seconds}s`;
+        }
+    }
+
+    adButtons.forEach((btn) => {
+        const saved = getProgress(fileId, btn.id);
+        state[btn.id] = { seconds: saved.seconds || 0, completed: !!saved.completed, skipped: false };
+
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "ad-btn";
+        item.setAttribute("data-btn-id", btn.id);
+        item.innerHTML = `
+      <span class="ad-btn-label">${escapeHtml(btn.label || "Xem quảng cáo")}</span>
+      <span class="ad-btn-status" data-ad-status></span>
+    `;
+
+        item.addEventListener("click", () => {
+            if (state[btn.id].completed || state[btn.id].skipped) return;
+
+            // type "custom": mở đúng link đã đặt; còn lại: chọn ngẫu nhiên trong nhóm quảng cáo.
+            const link = btn.type === "custom" ? (/^https?:\/\//i.test(btn.url || "") ? { url: btn.url } : null) : pickAdLink(btn.categories, pool);
+            if (!link) {
+                // No valid ad available for this button's categories -> per
+                // site policy, auto-skip it rather than blocking the download.
+                state[btn.id].completed = true;
+                state[btn.id].skipped = true;
+                setProgress(fileId, btn.id, state[btn.id]);
+                renderButtonUI(btn);
+                checkUnlock();
+                return;
+            }
+
+            window.open(link.url, "_blank", "noopener,noreferrer");
+            activeButtonId = btn.id;
+            renderButtonUI(btn);
+        });
+
+        list.appendChild(item);
+        renderButtonUI(btn);
+    });
+
+    checkUnlock();
+
+    // Page Visibility API: only the most-recently-clicked, not-yet-done
+    // button earns credit for a period the tab spent hidden.
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            hiddenSince = Date.now();
+            return;
+        }
+        if (hiddenSince && activeButtonId && state[activeButtonId] && !state[activeButtonId].completed) {
+            const elapsedSec = (Date.now() - hiddenSince) / 1000;
+            const btn = adButtons.find((b) => b.id === activeButtonId);
+            const s = state[activeButtonId];
+            s.seconds = Math.min(btn.seconds, s.seconds + elapsedSec);
+            if (s.seconds >= btn.seconds) s.completed = true;
+            setProgress(fileId, activeButtonId, s);
+            renderButtonUI(btn);
+            checkUnlock();
+        }
+        hiddenSince = null;
+    });
+
+    // Download buttons — any one of them (primary or a backup mirror)
+    // triggers the file and counts as one download.
+    downloadBtns.forEach((el) => {
+        el.addEventListener("click", () => {
+            if (el.disabled) return;
+            const i = Number(el.getAttribute("data-download-index"));
+            const dl = config.downloads[i];
+
+            if (dl.mode === "direct") {
+                const a = document.createElement("a");
+                a.href = dl.url;
+                a.setAttribute("download", "");
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                downloadNote.textContent = "Đang tải xuống...";
+            } else {
+                window.open(dl.url, "_blank", "noopener,noreferrer");
+            }
+
+            // Count the actual download action (not the page view, not
+            // finishing the ads) — fire-and-forget, never blocks the
+            // download itself if the counter API is slow/cold-starting.
+            hitDownloadCount(fileId).then((count) => {
+                if (count != null) downloadCountEl.textContent = `⬇ ${count}`;
+            });
+        });
+    });
+}
+
+main();

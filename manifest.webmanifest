@@ -1,0 +1,18 @@
+{
+  "name": "Shinju Ch.",
+  "short_name": "Shinju Ch.",
+  "description": "Trang cá nhân của Shinju Ch. (@ShinjuVNer): mạng xã hội, ủng hộ và các bài đăng mới.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050b16",
+  "theme_color": "#050b16",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/assets/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

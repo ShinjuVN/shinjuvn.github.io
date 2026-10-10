@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Admin</title>
+<link rel="stylesheet" href="/admin/css/admin.css"></head>
+<body><div id="app"></div><div id="toast"></div>
+<script src="/admin/js/core.js"></script>
+<script>
+Admin.boot({ id: "dashboard", title: "Dashboard", async render(main) {
+  const { esc } = Admin;
+  main.innerHTML = `<h2>Dashboard</h2>
+    <div class="card"><h3>Kết nối</h3><div id="st"><span class="dot"></span>Đang kiểm tra…</div></div>
+    <div class="card"><h3>Nội dung</h3><div class="grid" id="stats"><span class="hint">Đang tải…</span></div></div>
+    <div class="card"><h3>Lối tắt</h3><a class="btn" href="/admin/setting/">Cài đặt</a>
+      <a class="btn ghost" href="/post/" target="_blank" style="margin-left:6px">Xem /post</a>
+      <a class="btn ghost" href="/download/" target="_blank" style="margin-left:6px">Xem /download</a></div>`;
+  const t0 = performance.now();
+  try { await Admin.api("/ping"); document.getElementById("st").innerHTML = `<span class="dot ok"></span>Worker admin hoạt động (${Math.round(performance.now() - t0)} ms)`; }
+  catch (e) { document.getElementById("st").innerHTML = `<span class="dot bad"></span>${esc(e.message)}`; }
+  try {
+    const [{ files }, posts] = await Promise.all([Admin.api("/tree"), Admin.readJson("post/data/posts.json", [])]);
+    const n = (re) => files.filter((f) => re.test(f.path)).length;
+    const v = (k) => posts.filter((p) => p.visibility === k).length;
+    const cell = (b, s) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`;
+    document.getElementById("stats").innerHTML =
+      cell(posts.length, "bài đăng") + cell(v("public"), "công khai") + cell(v("unlisted"), "không liệt kê") + cell(v("private"), "riêng tư") +
+      cell(n(/^download\/data\/[^/]+\.json$/), "mục download") + cell(files.length, "file trong repo");
+  } catch (e) { document.getElementById("stats").innerHTML = `<span class="hint">${esc(e.message)}</span>`; }
+}});
+</script></body></html>

@@ -1,30 +1,31 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- seo:start -->
-  <title>Shinju Ch.</title>
-  <meta name="description" content="Trang cá nhân của Shinju Ch. (@ShinjuVNer): mạng xã hội, ủng hộ và các bài đăng mới." />
-  <meta name="keywords" content="Shinju Ch., ShinjuVNer, Shinju, mạng xã hội, blog" />
-  <link rel="canonical" href="https://shinjuvn.github.io/" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- seo:start -->
+  <title>Shinju Ch. — Blog</title>
+  <meta name="description" content="Blog của Shinju Ch.: thông báo, hướng dẫn và các bài viết mới." />
+  <meta name="keywords" content="blog, bài viết, hướng dẫn, Shinju Ch." />
+  <link rel="canonical" href="https://shinjuvn.github.io/post/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Shinju Ch." />
-  <meta property="og:title" content="Shinju Ch." />
-  <meta property="og:description" content="Trang cá nhân của Shinju Ch. (@ShinjuVNer): mạng xã hội, ủng hộ và các bài đăng mới." />
-  <meta property="og:url" content="https://shinjuvn.github.io/" />
+  <meta property="og:title" content="Shinju Ch. — Blog" />
+  <meta property="og:description" content="Blog của Shinju Ch.: thông báo, hướng dẫn và các bài viết mới." />
+  <meta property="og:url" content="https://shinjuvn.github.io/post/" />
   <meta name="twitter:card" content="summary" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
   <!-- seo:end -->
-    <link rel="stylesheet" href="/css/loading.css" />
-  <link rel="stylesheet" href="/css/header.css" />
-  <link rel="stylesheet" href="/css/style.css" />
+        <link rel="stylesheet" href="/css/loading.css" />
+    <link rel="stylesheet" href="/css/header.css" />
+    <link rel="stylesheet" href="/post/css/style.css" />
 <script src="/js/theme.js" defer></script>
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="theme-color" content="#050b16" />
   <script src="/js/pwa.js" defer></script>
 </head>
 <body>
+  <!-- Shared loading screen (same mechanism as the rest of the site) -->
   <div id="site-loading" class="site-loading">
     <div class="site-loading-inner">
       <p class="site-loading-msg">Chờ xíu nhé!<br />Trang của bạn đang được tải</p>
@@ -44,20 +45,11 @@
   </header>
   <script src="/js/site-chrome.js"></script>
 
-  <main class="page">
-    <div class="avatar-wrap">
-      <img data-avatar src="" alt="Shinju Ch." />
-      <span class="status-dot" data-status-dot></span>
-    </div>
+  <div id="app" class="page"></div>
 
-    <h1 class="display-name" data-name>Shinju Ch.</h1>
+  <footer class="site-footer" data-global-footer>© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved.</footer>
 
-    <div class="link-list" data-link-list></div>
-
-    <footer class="site-footer" data-global-footer>© 2026 Shinju Ch. (@ShinjuVNer). All rights reserved.</footer>
-  </main>
-
-  <script src="/js/icons.js"></script>
-  <script src="/js/main.js"></script>
+  <script src="/post/js/render.js"></script>
+  <script src="/post/js/main.js"></script>
 </body>
 </html>
