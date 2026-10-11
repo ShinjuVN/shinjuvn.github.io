@@ -53,6 +53,7 @@ Admin.boot({ id: "download", title: "Download", async render(main) {
       <label>Từ khóa (cách nhau bằng dấu phẩy)<input id="d_kw" value="${esc(d.keywords || "")}"></label>
       <button type="button" class="ghost" id="d_ai">✨ AI gợi ý mô tả và từ khóa</button>
     </div>
+    <div class="card"><label class="row"><input type="checkbox" id="d_cm" ${d.comments === false ? "" : "checked"}>Cho phép bình luận (Giscus) ở trang này</label></div>
     <div class="card"><h3>Câu hướng dẫn trên trang</h3>
       <label><select id="d_hm"><option value="default" ${hintMode === "default" ? "selected" : ""}>Dùng câu mặc định</option><option value="custom" ${hintMode === "custom" ? "selected" : ""}>Tự viết câu riêng</option><option value="hide" ${hintMode === "hide" ? "selected" : ""}>Ẩn câu hướng dẫn</option></select></label>
       <label id="d_hl">Nội dung câu<input id="d_hint" placeholder="${esc(DEF_HINT)}" value="${esc(hintMode === "custom" ? d.hint : "")}"></label></div>
@@ -102,6 +103,7 @@ Admin.boot({ id: "download", title: "Download", async render(main) {
       const put = (k, val) => (val ? (data[k] = val) : delete data[k]);
       put("description", v("d_desc")); put("keywords", v("d_kw"));
       const hm = $("#d_hm").value; if (hm === "hide") data.hint = ""; else if (hm === "custom" && v("d_hint")) data.hint = v("d_hint"); else delete data.hint;
+      if ($("#d_cm").checked) delete data.comments; else data.comments = false;
       if ($("#d_req").checked) delete data.requireAllAds; else data.requireAllAds = false;
       data.adButtons = ads.map((b) => ({ id: b.id, label: b.label.trim() || "Xem quảng cáo", seconds: b.seconds, ...(b.type === "custom" ? { type: "custom", url: b.url.trim() } : { categories: b.categories }) }));
       data.downloads = dls.map((x, i) => ({ ...x, id: x.id || "dl" + (i + 1), label: (x.label || "").trim() || (i === 0 ? "Tải Xuống" : `Link dự phòng ${i}`), url: x.url.trim() }));

@@ -11,6 +11,14 @@
 <script src="/admin/js/rebuild.js"></script>
 <script>
 const PAGES = AdminSeo.PAGES;
+// Cắt vuông ở giữa, đổi cỡ size×size, ưu tiên WebP (nhẹ hơn, giữ nền trong suốt); trả về { b64, ext }
+const toSquare = (file, size) => new Promise((res, rej) => {
+  const u = URL.createObjectURL(file), im = new Image();
+  im.onload = () => { const c = document.createElement("canvas"); c.width = c.height = size;
+    const w = im.naturalWidth || size, h = im.naturalHeight || size, m = Math.min(w, h);
+    c.getContext("2d").drawImage(im, (w - m) / 2, (h - m) / 2, m, m, 0, 0, size, size); URL.revokeObjectURL(u);
+    const d = c.toDataURL("image/webp", 0.9), ok = d.startsWith("data:image/webp"); res({ b64: (ok ? d : c.toDataURL("image/png")).split(",")[1], ext: ok ? "webp" : "png" }); };
+  im.onerror = () => rej(new Error("Không đọc được ảnh đại diện")); im.src = u; });
 const FAV = [["favicon-32.png", 32], ["favicon-180.png", 180], ["favicon-192.png", 192], ["favicon-512.png", 512]];
 // Cắt ảnh vuông ở giữa rồi đổi sang PNG (base64) theo kích thước size.
 const toPng = (file, size) => new Promise((res, rej) => {
@@ -26,7 +34,7 @@ const DEF = {
   giscus: { enabled: true, repo: "ShinjuVN/giscus-data", repoId: "", category: "Bình luận", categoryId: "", mapping: "pathname" },
   announcement: { enabled: false, text: "", url: "", expires: "" },
   maintenance: { enabled: false, message: "Trang web đang được cập nhật, vui lòng quay lại sau." },
-  theme: { default: "none", pages: { home: "", post: "", download: "", channel: "", donate: "" } },
+  theme: { default: "none", intensity: 0.7, forceMotion: false, pages: { home: "", post: "", download: "", channel: "", donate: "" } },
   seo: AdminSeo.DEFAULT,
   telegram: mergeTg(),
 };
@@ -43,7 +51,12 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
   <p><button type="button" class="ghost" data-json="site-settings.json">Sửa file site-settings.json</button> <button type="button" class="ghost" data-json="data.json">Sửa file data.json (menu, nút trang chủ…)</button></p>
   <div class="card"><h3>Trang chủ</h3>
     <label>Tên hiển thị<input id="name" value="${esc(D.profile?.name)}"></label>
-    <label>Chân trang (footer)<input id="footer" value="${esc(D.footer)}"></label></div>
+    <label>Chân trang (footer)<input id="footer" value="${esc(D.footer)}"></label>
+    <label>Ảnh đại diện (avatar) mới — ảnh vuông càng tốt, tự cắt giữa và thu về 512 px<input id="av_file" type="file" accept="image/*"></label>
+    <img id="av_prev" src="${esc(D.profile?.avatar || "")}" width="72" height="72" alt="" style="border-radius:50%;object-fit:cover;background:#0a1626">
+    <label class="row" style="margin-top:8px"><input type="checkbox" id="pf_online" ${D.profile?.showOnline === false ? "" : "checked"}>Hiện chấm tròn "đang online" ở góc avatar</label>
+    <label>Màu chấm online<input id="pf_color" type="color" value="${esc(D.profile?.statusColor || "#3ddc3d")}" style="height:38px;padding:2px"></label>
+    <label class="row" style="margin-top:8px"><input type="checkbox" id="av_logo" ${(D.nav?.logo || "") === (D.profile?.avatar || "") ? "checked" : ""}>Dùng luôn ảnh này làm logo ở thanh menu</label></div>
   <div class="card"><h3>SEO từng trang &amp; favicon</h3>
     <label>Tên site<input id="seo_name" value="${esc(S.seo.siteName)}"></label>
     <label>Ảnh chia sẻ mặc định (URL, tùy chọn)<input id="seo_og" value="${esc(S.seo.ogImage)}" placeholder="https://..."></label>
@@ -59,6 +72,8 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
     <div id="fxprev" style="position:relative;height:170px;border-radius:10px;overflow:hidden;background:linear-gradient(#050b16,#10243f);margin-bottom:12px"></div>
     <label>Nền mặc định cho cả web<select id="th_def">${themeOpts(S.theme.default, false)}</select></label>
     ${Object.entries(PAGES).map(([k, l]) => `<label>${l}<select id="th_${k}">${themeOpts(S.theme.pages[k], true)}</select></label>`).join("")}
+    <label>Độ đậm của hiệu ứng: <b id="th_iv">${Math.round((S.theme.intensity || 0.7) * 100)}</b>% (thấp hơn = dịu mắt hơn)<input id="th_int" type="range" min="20" max="100" step="5" value="${Math.round((S.theme.intensity || 0.7) * 100)}"></label>
+    <label class="row"><input type="checkbox" id="th_force" ${S.theme.forceMotion ? "checked" : ""}>Luôn chạy chuyển động dù thiết bị đang bật "giảm chuyển động" (Windows: tắt hiệu ứng hoạt cảnh)</label>
     <p class="hint">Chọn nền thì khung phía trên chạy thử ngay. Hiệu ứng tự giảm số hạt trên điện thoại, tạm dừng khi chuyển tab và đứng yên nếu người xem bật "giảm chuyển động" trong thiết bị.</p></div>
   <div class="card"><h3>Thông báo qua Telegram</h3>
     <label class="row"><input type="checkbox" id="tg_login" ${S.telegram.login ? "checked" : ""}>Báo mỗi lần có người đăng nhập admin</label>
@@ -85,6 +100,7 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
     <button type="button" class="ghost" id="rb">Làm mới trang bài viết và download</button> <span class="hint" id="rbs"></span></details>
   <p class="hint">Lưu ý: nền động và SEO có hiệu lực sau khi lưu (khoảng 1 phút). Các mục thông báo, bảo trì và bình luận đã được lưu vào <code>site-settings.json</code>, nhưng web công khai sẽ đọc chúng ở các giai đoạn sau.</p>
   <button id="save">Lưu thay đổi</button>`;
+  $("#av_file").onchange = (e) => { const f = e.target.files[0]; if (f) $("#av_prev").src = URL.createObjectURL(f); };
   $("#fav").onchange = (e) => { const f = e.target.files[0]; if (f) $("#favprev").src = URL.createObjectURL(f); };
   main.querySelectorAll("[data-ai]").forEach((b) => (b.onclick = async () => {
     const k = b.dataset.ai; b.disabled = true;
@@ -108,17 +124,20 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
     b.disabled = false;
   };
   let stopFx = () => {};
-  const preview = (n) => { stopFx(); stopFx = ShinjuTheme.mount($("#fxprev"), n); };
+  let curFx = S.theme.default;
+  const preview = (n = curFx) => { curFx = n; stopFx(); stopFx = ShinjuTheme.mount($("#fxprev"), n, { intensity: $("#th_int").value / 100, force: $("#th_force").checked }); };
+  $("#th_int").oninput = () => { $("#th_iv").textContent = $("#th_int").value; preview(); };
+  $("#th_force").onchange = () => preview();
   main.querySelectorAll("select[id^=th_]").forEach((el) => (el.onchange = () => preview(el.value || $("#th_def").value)));
   preview(S.theme.default);
   $("#save").onclick = async () => {
     const b = $("#save"); b.disabled = true;
     const val = (i) => $("#" + i).value.trim();
-    D.profile = { ...D.profile, name: val("name") }; D.footer = val("footer");
+    D.profile = { ...D.profile, name: val("name"), showOnline: $("#pf_online").checked, statusColor: $("#pf_color").value }; D.footer = val("footer");
     S.announcement = { enabled: $("#an_on").checked, text: val("an_text"), url: val("an_url"), expires: val("an_exp") };
     S.maintenance = { enabled: $("#mt_on").checked, message: val("mt_msg") };
     S.giscus = { ...S.giscus, enabled: $("#gc_on").checked, repo: val("gc_repo"), repoId: val("gc_rid"), category: val("gc_cat"), categoryId: val("gc_cid") };
-    S.theme = { default: val("th_def"), pages: Object.fromEntries(Object.keys(PAGES).map((k) => [k, val("th_" + k)])) };
+    S.theme = { default: val("th_def"), intensity: $("#th_int").value / 100, forceMotion: $("#th_force").checked, pages: Object.fromEntries(Object.keys(PAGES).map((k) => [k, val("th_" + k)])) };
     const th = (id) => [...new Set($(id).value.split(/[,\s]+/).map(Number).filter((n) => n > 0))].sort((a, b) => a - b);
     S.telegram = { login: $("#tg_login").checked, loginFail: $("#tg_fail").checked, views: { enabled: $("#tg_v").checked, thresholds: th("#tg_vt") }, downloads: { enabled: $("#tg_d").checked, thresholds: th("#tg_dt") } };
     S.seo.siteName = val("seo_name"); S.seo.ogImage = val("seo_og");
@@ -130,6 +149,16 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
         for (const [name, size] of FAV) files.push({ path: "assets/favicon/" + name, content: await toPng(favFile, size), encoding: "base64" });
         S.seo.favicon = { icon: "/assets/favicon/favicon-32.png?v=" + v, apple: "/assets/favicon/favicon-180.png?v=" + v, v };
       }
+      const deletes = [], avFile = $("#av_file").files[0];
+      if (avFile) { // tên file có mã phiên bản → không bị cache cũ; xóa ảnh avatar cũ nằm trong assets/avatar/
+        const { b64, ext } = await toSquare(avFile, 512), path = `assets/avatar/avatar-${Date.now().toString(36)}.${ext}`;
+        const old = [D.profile?.avatar, D.nav?.logo].filter((x) => x && x.startsWith("/assets/avatar/")).map((x) => x.slice(1));
+        files.push({ path, content: b64, encoding: "base64" });
+        D.profile = { ...D.profile, avatar: "/" + path }; D.nav = D.nav || {};
+        if ($("#av_logo").checked) D.nav.logo = "/" + path;
+        const have = new Set((await Admin.api("/tree")).files.map((f) => f.path));
+        old.filter((x) => have.has(x) && x !== path && ![D.profile.avatar, D.nav.logo].includes("/" + x)).forEach((x) => deletes.push(x));
+      } else if ($("#av_logo").checked && D.profile?.avatar) { D.nav = D.nav || {}; D.nav.logo = D.profile.avatar; } // chỉ đồng bộ logo với avatar hiện tại
       files.push({ path: "manifest.webmanifest", content: AdminSeo.manifest(S.seo) }); // PWA: tên + biểu tượng theo cài đặt
       files.unshift({ path: "site-settings.json", content: JSON.stringify(S, null, 2) + "\n" }, { path: "data.json", content: JSON.stringify(D, null, 2) + "\n" });
       for (const k of Object.keys(PAGES)) { // ghi SEO thẳng vào HTML tĩnh của từng trang
@@ -137,7 +166,7 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
         if (out === null) throw new Error(path + " chưa có cặp <!-- seo:start --> / <!-- seo:end -->");
         if (out !== html) files.push({ path, content: out });
       }
-      await Admin.commitFiles("Admin: cập nhật cài đặt, SEO và favicon", files);
+      await Admin.commitFiles("Admin: cập nhật cài đặt, SEO và favicon", files, deletes);
       Admin.toast("Đã lưu. Web cập nhật sau khoảng 1 phút.");
     } catch (e) { Admin.toast(e.message, true); }
     b.disabled = false;

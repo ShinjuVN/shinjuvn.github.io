@@ -458,3 +458,4 @@ body::before {
 .post-edited{font-style:normal;opacity:.7;font-size:.92em}
 .post-comments{margin-top:32px}
 .post-comments h2{margin:0 0 12px}
+.post-share{display:flex;justify-content:flex-start;margin-top:22px}

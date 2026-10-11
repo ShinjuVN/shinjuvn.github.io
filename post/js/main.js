@@ -443,6 +443,7 @@ async function renderPostPage(id) {
     applySeoMeta(meta, body, id);
     initTimedButtons(document.querySelector(".post-body"));
 
+    mountShare(entry, id, meta);
     renderComments(meta);
 
     // View counter: shows the current count immediately, then waits
@@ -496,6 +497,28 @@ async function renderPostPage(id) {
 /* Bình luận Giscus: cấu hình ở /site-settings.json → giscus;           */
 /* tắt riêng cho một bài bằng dòng "comments: off" trong frontmatter.  */
 /* ============================================================== */
+
+// Nạp js/share.js khi cần (để các trang đã tạo sẵn từ trước vẫn có nút chia sẻ).
+function ensureShare() {
+    if (window.SiteShare) return Promise.resolve();
+    return new Promise((resolve) => {
+        const s = document.createElement("script");
+        s.src = "/js/share.js";
+        s.onload = s.onerror = () => resolve();
+        document.head.appendChild(s);
+    });
+}
+
+async function mountShare(entry, id, meta) {
+    const body = document.querySelector(".post-body");
+    if (!body) return;
+    const host = document.createElement("div");
+    host.className = "post-share";
+    body.after(host);
+    const url = entry && entry.short ? `${window.location.origin}/s/${entry.short}/` : `${window.location.origin}/post/${encodeURIComponent(id)}/`;
+    await ensureShare();
+    if (window.SiteShare) window.SiteShare.mount(host, { url, title: meta.title || document.title });
+}
 
 async function renderComments(meta) {
     if (String(meta.comments || "").toLowerCase() === "off") return;

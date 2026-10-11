@@ -28,7 +28,11 @@ function render(data) {
   if (avatarImg) avatarImg.src = data.profile.avatar;
 
   const statusDot = document.querySelector("[data-status-dot]");
-  if (statusDot) statusDot.style.background = data.profile.statusColor;
+  if (statusDot) {
+    // profile.showOnline: false → ẩn chấm; profile.statusColor → màu chấm (đặt trong /admin → Cài đặt)
+    if (data.profile.showOnline === false) statusDot.remove();
+    else statusDot.style.setProperty("--dot", data.profile.statusColor || "#3ddc3d");
+  }
 
   const nameEl = document.querySelector("[data-name]");
   if (nameEl) nameEl.textContent = data.profile.name;

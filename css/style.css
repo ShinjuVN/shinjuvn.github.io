@@ -107,15 +107,36 @@ body::before {
         box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
 
+/* Chấm "đang online" nằm đúng trên mép tròn của avatar ở góc chéo dưới-phải (45°): tâm cách mép khung 14,645% */
 .status-dot {
     position: absolute;
-    right: 6px;
-    bottom: 8px;
-    width: 22px;
-    height: 22px;
+    right: calc(14.645% - 14px);
+    bottom: calc(14.645% - 14px);
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: var(--dot-online);
-    border: 3px solid var(--bg-deep);
+    background: var(--dot, var(--dot-online));
+    border: 4px solid var(--bg-deep);
+    box-shadow: 0 0 10px var(--dot, var(--dot-online));
+}
+
+    .status-dot::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid var(--dot, var(--dot-online));
+        opacity: 0;
+        animation: dot-ring 2.4s ease-out infinite;
+    }
+
+@keyframes dot-ring {
+    0% { transform: scale(.8); opacity: .55; }
+    100% { transform: scale(1.9); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .status-dot::after { animation: none; }
 }
 
 .display-name {

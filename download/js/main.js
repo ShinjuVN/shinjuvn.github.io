@@ -223,6 +223,58 @@ function setProgress(fileId, buttonId, progress) {
 /* Page logic                                                       */
 /* ============================================================== */
 
+// Nạp js/share.js khi cần (để các trang đã tạo sẵn từ trước vẫn có nút chia sẻ).
+function ensureShare() {
+    if (window.SiteShare) return Promise.resolve();
+    return new Promise((resolve) => {
+        const s = document.createElement("script");
+        s.src = "/js/share.js";
+        s.onload = s.onerror = () => resolve();
+        document.head.appendChild(s);
+    });
+}
+
+async function renderComments(config) {
+    if (config.comments === false) return; // tắt riêng cho mục tải này trong /admin/download
+    let cfg = null;
+    try {
+        const res = await fetch("/site-settings.json", { cache: "no-cache" });
+        if (res.ok) cfg = (await res.json()).giscus;
+    } catch (e) {
+        return;
+    }
+    if (!cfg || cfg.enabled === false || !cfg.repo || !cfg.repoId || !cfg.categoryId) return;
+    const card = document.querySelector(".download-card");
+    if (!card) return;
+    const section = document.createElement("section");
+    section.className = "download-comments";
+    section.innerHTML = "<h2>Bình luận</h2>";
+    card.after(section);
+    const load = () => {
+        const s = document.createElement("script");
+        s.src = "https://giscus.app/client.js";
+        s.async = true;
+        s.crossOrigin = "anonymous";
+        const attrs = { repo: cfg.repo, "repo-id": cfg.repoId, category: cfg.category, "category-id": cfg.categoryId, mapping: cfg.mapping || "pathname", strict: "0", "reactions-enabled": "1", "emit-metadata": "0", "input-position": "bottom", theme: "dark", lang: "vi", loading: "lazy" };
+        Object.entries(attrs).forEach(([k, v]) => s.setAttribute("data-" + k, v));
+        section.appendChild(s);
+    };
+    if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { io.disconnect(); load(); } }, { rootMargin: "400px" });
+        io.observe(section);
+    } else {
+        load();
+    }
+}
+
+async function mountShare(config, fileId) {
+    const host = document.querySelector("[data-share]");
+    if (!host) return;
+    const url = config.short ? `${location.origin}/s/${config.short}/` : `${location.origin}/download/${encodeURIComponent(fileId)}/`;
+    await ensureShare();
+    if (window.SiteShare) window.SiteShare.mount(host, { url, title: config.title || document.title });
+}
+
 async function main() {
     const fileId = getFileId();
     if (!fileId) {
@@ -263,10 +315,13 @@ async function main() {
       <p class="download-count" data-download-count>⬇ …</p>
       <div class="download-btn-list" data-download-list>${downloadButtonsHtml}</div>
       <p class="download-note" data-download-note></p>
+      <div class="download-share" data-share></div>
     </div>
   `;
 
     if (window.SiteLoading) window.SiteLoading.ready();
+    mountShare(config, fileId);
+    renderComments(config);
 
     // Show the current download count right away (read-only — never
     // increments). The actual +1 only happens when a download button
