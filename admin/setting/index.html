@@ -34,7 +34,7 @@ const DEF = {
   giscus: { enabled: true, repo: "ShinjuVN/giscus-data", repoId: "", category: "Bình luận", categoryId: "", mapping: "pathname" },
   announcement: { enabled: false, text: "", url: "", expires: "" },
   maintenance: { enabled: false, message: "Trang web đang được cập nhật, vui lòng quay lại sau." },
-  theme: { default: "none", intensity: 0.7, forceMotion: false, pages: { home: "", post: "", download: "", channel: "", donate: "" } },
+  theme: { default: "none", intensity: 0.7, wash: 0.6, dim: 0, forceMotion: false, pages: { home: "", post: "", download: "", channel: "", donate: "" } },
   seo: AdminSeo.DEFAULT,
   telegram: mergeTg(),
 };
@@ -73,6 +73,8 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
     <label>Nền mặc định cho cả web<select id="th_def">${themeOpts(S.theme.default, false)}</select></label>
     ${Object.entries(PAGES).map(([k, l]) => `<label>${l}<select id="th_${k}">${themeOpts(S.theme.pages[k], true)}</select></label>`).join("")}
     <label>Độ đậm của hiệu ứng: <b id="th_iv">${Math.round((S.theme.intensity || 0.7) * 100)}</b>% (thấp hơn = dịu mắt hơn)<input id="th_int" type="range" min="20" max="100" step="5" value="${Math.round((S.theme.intensity || 0.7) * 100)}"></label>
+    <label>Phủ màu nền theo theme: <b id="th_wv">${Math.round((S.theme.wash ?? 0.6) * 100)}</b>% (nền ảnh sáng thì tăng lên để thấy rõ hiệu ứng)<input id="th_wash" type="range" min="0" max="100" step="5" value="${Math.round((S.theme.wash ?? 0.6) * 100)}"></label>
+    <label>Làm tối nền chung: <b id="th_dv">${Math.round((S.theme.dim || 0) * 100)}</b>% (áp dụng cả khi không chọn theme, giúp bớt chói trắng)<input id="th_dim" type="range" min="0" max="70" step="5" value="${Math.round((S.theme.dim || 0) * 100)}"></label>
     <label class="row"><input type="checkbox" id="th_force" ${S.theme.forceMotion ? "checked" : ""}>Luôn chạy chuyển động dù thiết bị đang bật "giảm chuyển động" (Windows: tắt hiệu ứng hoạt cảnh)</label>
     <p class="hint">Chọn nền thì khung phía trên chạy thử ngay. Hiệu ứng tự giảm số hạt trên điện thoại, tạm dừng khi chuyển tab và đứng yên nếu người xem bật "giảm chuyển động" trong thiết bị.</p></div>
   <div class="card"><h3>Thông báo qua Telegram</h3>
@@ -125,8 +127,10 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
   };
   let stopFx = () => {};
   let curFx = S.theme.default;
-  const preview = (n = curFx) => { curFx = n; stopFx(); stopFx = ShinjuTheme.mount($("#fxprev"), n, { intensity: $("#th_int").value / 100, force: $("#th_force").checked }); };
+  const preview = (n = curFx) => { curFx = n; stopFx(); stopFx = ShinjuTheme.mount($("#fxprev"), n, { intensity: $("#th_int").value / 100, wash: $("#th_wash").value / 100, dim: $("#th_dim").value / 100, force: $("#th_force").checked }); };
   $("#th_int").oninput = () => { $("#th_iv").textContent = $("#th_int").value; preview(); };
+  $("#th_wash").oninput = () => { $("#th_wv").textContent = $("#th_wash").value; preview(); };
+  $("#th_dim").oninput = () => { $("#th_dv").textContent = $("#th_dim").value; preview(); };
   $("#th_force").onchange = () => preview();
   main.querySelectorAll("select[id^=th_]").forEach((el) => (el.onchange = () => preview(el.value || $("#th_def").value)));
   preview(S.theme.default);
@@ -137,7 +141,7 @@ Admin.boot({ id: "setting", title: "Cài đặt", async render(main) {
     S.announcement = { enabled: $("#an_on").checked, text: val("an_text"), url: val("an_url"), expires: val("an_exp") };
     S.maintenance = { enabled: $("#mt_on").checked, message: val("mt_msg") };
     S.giscus = { ...S.giscus, enabled: $("#gc_on").checked, repo: val("gc_repo"), repoId: val("gc_rid"), category: val("gc_cat"), categoryId: val("gc_cid") };
-    S.theme = { default: val("th_def"), intensity: $("#th_int").value / 100, forceMotion: $("#th_force").checked, pages: Object.fromEntries(Object.keys(PAGES).map((k) => [k, val("th_" + k)])) };
+    S.theme = { default: val("th_def"), intensity: $("#th_int").value / 100, wash: $("#th_wash").value / 100, dim: $("#th_dim").value / 100, forceMotion: $("#th_force").checked, pages: Object.fromEntries(Object.keys(PAGES).map((k) => [k, val("th_" + k)])) };
     const th = (id) => [...new Set($(id).value.split(/[,\s]+/).map(Number).filter((n) => n > 0))].sort((a, b) => a - b);
     S.telegram = { login: $("#tg_login").checked, loginFail: $("#tg_fail").checked, views: { enabled: $("#tg_v").checked, thresholds: th("#tg_vt") }, downloads: { enabled: $("#tg_d").checked, thresholds: th("#tg_dt") } };
     S.seo.siteName = val("seo_name"); S.seo.ogImage = val("seo_og");

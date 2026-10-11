@@ -10,6 +10,8 @@
   const st = document.createElement("style");
   st.textContent = `.fx-canvas,.fx-aurora{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .fx-canvas.in,.fx-aurora.in{position:absolute;z-index:0}
+.fx-wash{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.fx-wash.in{position:absolute;z-index:0}
 .fx-aurora{inset:-10%;width:120%;height:120%;filter:blur(40px);opacity:.45;will-change:transform;animation:fx-au 14s ease-in-out infinite alternate;
 background:radial-gradient(60% 50% at 20% 30%,rgba(60,200,170,.45),transparent 60%),radial-gradient(50% 60% at 80% 20%,rgba(120,90,240,.4),transparent 60%),radial-gradient(60% 50% at 50% 90%,rgba(40,130,240,.35),transparent 60%)}
 .fx-aurora.in{inset:-10%}
@@ -61,8 +63,25 @@ background:radial-gradient(60% 50% at 20% 30%,rgba(60,200,170,.45),transparent 6
   };
 
   // host = phần tử chứa (xem trước); bỏ trống = phủ cả màn hình, nằm sau nội dung. Trả về hàm dừng.
-  // opts.intensity: độ đậm 0.2–1 (mặc định 0.7). opts.force: vẫn chạy chuyển động dù thiết bị bật "giảm chuyển động".
+  // Lớp phủ màu theo theme: nền ảnh sáng làm các hạt trắng "biến mất", nên mỗi theme có một nền màu riêng phía dưới hiệu ứng.
+  const WASH = {
+    stars: "linear-gradient(180deg,#050b25,#0d1b4a)", aurora: "linear-gradient(180deg,#07142b,#0c3340)",
+    sakura: "linear-gradient(180deg,#2c1034,#52204a)", snow: "linear-gradient(180deg,#0f1c33,#23406b)",
+    rain: "linear-gradient(180deg,#0d1524,#2a3a58)", fireflies: "linear-gradient(180deg,#06140f,#0d2a1e)",
+    bubbles: "linear-gradient(180deg,#06324a,#0a5a7a)",
+  };
+  // opts.wash: độ phủ màu theme 0–1 (mặc định 0.6). opts.dim: làm tối nền chung 0–0.8 (mặc định 0, áp dụng cả khi không chọn theme).
   function mount(host, name, opts = {}) {
+    const parent = host || document.body, stopFx = mountEffect(host, name, opts), els = [];
+    const layer = (bg, op) => { const d = document.createElement("div"); d.className = "fx-wash" + (host ? " in" : ""); d.style.background = bg; d.style.opacity = String(op); parent.prepend(d); els.push(d); };
+    const w = opts.wash == null ? .6 : Math.min(1, Math.max(0, Number(opts.wash) || 0)), dim = Math.min(.8, Math.max(0, Number(opts.dim) || 0));
+    if (WASH[name] && w > 0) layer(WASH[name], w);
+    if (dim > 0) layer("#050b16", dim); // thêm sau cùng → nằm dưới cùng
+    return () => { stopFx(); els.forEach((e) => e.remove()); };
+  }
+
+  // opts.intensity: độ đậm 0.2–1 (mặc định 0.7). opts.force: vẫn chạy chuyển động dù thiết bị bật "giảm chuyển động".
+  function mountEffect(host, name, opts = {}) {
     const k = Math.min(1, Math.max(.2, Number(opts.intensity) || .7)), reduce = osReduce() && !opts.force;
     if (name === "aurora") {
       const d = document.createElement("div"); d.className = "fx-aurora" + (host ? " in" : "") + (opts.force ? " fx-force" : ""); d.style.opacity = String(.65 * k);
@@ -100,7 +119,8 @@ background:radial-gradient(60% 50% at 20% 30%,rgba(60,200,170,.45),transparent 6
 
   if (!manual) {
     fetch("/site-settings.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : {})).then((s) => {
-      const t = s.theme || {}; mount(null, (t.pages && t.pages[pageKey()]) || t.default || "none", { intensity: t.intensity, force: !!t.forceMotion });
+      const t = s.theme || {}, test = new URLSearchParams(location.search).get("fx"); // ?fx=night: thử nhanh một theme trên trang này (không cần lưu)
+      mount(null, test || (t.pages && t.pages[pageKey()]) || t.default || "none", { intensity: t.intensity, force: !!t.forceMotion, wash: t.wash, dim: t.dim });
     }).catch(() => {});
   }
 })();
