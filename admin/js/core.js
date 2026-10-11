@@ -9,6 +9,7 @@
     ["links", "Link rút gọn", "/admin/links/"],
     ["ads", "Quảng cáo", "/admin/ads/"],
     ["stats", "Số liệu", "/admin/stats/"],
+    ["status", "Trạng thái", "/admin/status/"],
     ["setting", "Cài đặt", "/admin/setting/"],
   ];
   const $ = (s, r = document) => r.querySelector(s);

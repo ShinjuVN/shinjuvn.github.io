@@ -1,54 +1,125 @@
-/* loading.js — shared loading-screen controller.
-   Include this once per page, right after the #site-loading markup,
-   before the page's own main.js. It hides the overlay once every
-   image it's told to wait for has finished loading.
+/* loading.js — màn hình chờ dùng chung + trạng thái ("bong bóng" trên avatar).
+   Chèn một lần cho mỗi trang, ngay sau markup #site-loading, trước main.js của trang.
 
-   Works with ANY image format the background CSS uses — png, jpg,
-   webp, or an animated gif — because it never assumes an extension;
-   it just reads whatever URL getComputedStyle() reports for
-   background-image and preloads that exact file. If you swap a bg
-   image to .gif in the CSS, this keeps working with no code changes.
-*/
+   • Ẩn màn hình chờ khi mọi ảnh được báo (window.SiteLoading.waitFor) đã tải xong.
+     Hoạt động với mọi định dạng ảnh nền vì đọc đúng URL do getComputedStyle trả về.
+   • Theme của màn hình chờ đổi theo cảm xúc đang đặt trong /status.json (sửa ở /admin → Trạng thái).
+     Không có cảm xúc (hoặc đã hết hạn) → theme "hoàng hôn". Lần ghé sau dùng ngay theme đã nhớ.
+   • Nếu trang có .avatar-wrap thì hiện bong bóng trạng thái phía trên avatar.
+   • Xem thử một theme: thêm ?loadpreview=<tên theme> vào địa chỉ trang chủ (màn hình chờ sẽ không tắt). */
 (function () {
     const overlay = document.getElementById("site-loading");
     if (!overlay) return;
+
+    const THEMES = ["sunset", "sunny", "rain", "night", "storm", "calm", "fog", "focus"];
+    const DEFAULT_THEME = "sunset";
+    const CACHE_KEY = "shinju_loading_theme";
+    const PREVIEW = new URLSearchParams(location.search).get("loadpreview");
 
     const fill = overlay.querySelector(".site-loading-fill");
     const tasks = [];
     let finished = false;
 
-    // --- Ambient glow + falling snow (pure code, no image assets) ---
-    const glow = document.createElement("div");
-    glow.className = "site-loading-glow";
-    overlay.insertBefore(glow, overlay.firstChild);
+    /* ---------------- Theme của màn hình chờ ---------------- */
+    const fx = document.createElement("div");
+    fx.className = "site-loading-fx";
+    overlay.insertBefore(fx, overlay.firstChild);
 
-    const snowLayer = document.createElement("div");
-    snowLayer.className = "site-loading-snow";
-    overlay.insertBefore(snowLayer, overlay.firstChild.nextSibling);
+    // Hạt trang trí theo theme: kiểu (rơi / bay lên / lấp lánh), số lượng, kích thước, thời lượng
+    const PARTICLES = {
+        sunset: { n: 16, cls: "mote", dir: "rise", size: [2, 5], dur: [9, 16] },
+        rain: { n: 55, cls: "drop", dir: "fall", size: [14, 22], dur: [0.7, 1.3] },
+        night: { n: 38, cls: "star", dir: "twinkle", size: [2, 4], dur: [2, 4] },
+        storm: { n: 26, cls: "ember", dir: "rise", size: [2, 5], dur: [4, 9] },
+        calm: { n: 14, cls: "bubble", dir: "rise", size: [8, 22], dur: [9, 16] },
+        focus: { n: 22, cls: "node", dir: "twinkle", size: [3, 6], dur: [2, 5] },
+    };
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    let currentTheme = "";
 
-    const FLAKE_COUNT = 28;
-    for (let i = 0; i < FLAKE_COUNT; i++) {
-        const flake = document.createElement("span");
-        flake.className = "snowflake";
-        const size = (Math.random() * 3 + 2).toFixed(1); // 2–5px
-        const left = (Math.random() * 100).toFixed(1); // 0–100%
-        const duration = (Math.random() * 6 + 6).toFixed(1); // 6–12s
-        const delay = (Math.random() * -12).toFixed(1); // stagger so they don't all start together
-        const drift = (Math.random() * 60 - 30).toFixed(0) + "px"; // slight left/right sway
-        const opacity = (Math.random() * 0.5 + 0.5).toFixed(2);
-        flake.style.width = size + "px";
-        flake.style.height = size + "px";
-        flake.style.left = left + "%";
-        flake.style.opacity = opacity;
-        flake.style.animationDuration = duration + "s";
-        flake.style.animationDelay = delay + "s";
-        flake.style.setProperty("--drift", drift);
-        snowLayer.appendChild(flake);
+    function applyTheme(id) {
+        if (!THEMES.includes(id)) id = DEFAULT_THEME;
+        if (id === currentTheme) return;
+        currentTheme = id;
+        overlay.className = overlay.className.replace(/\bt-\S+/g, "").trim() + " t-" + id;
+        fx.innerHTML = '<div class="fx fx-a"></div><div class="fx fx-b"></div><div class="fx-particles"></div>';
+        const cfg = PARTICLES[id];
+        if (!cfg) return;
+        const box = fx.querySelector(".fx-particles");
+        for (let i = 0; i < cfg.n; i++) {
+            const p = document.createElement("span");
+            p.className = "fx-p " + cfg.cls;
+            const size = rnd(cfg.size[0], cfg.size[1]).toFixed(1);
+            if (cfg.cls === "drop") p.style.height = size + "px";
+            else { p.style.width = size + "px"; p.style.height = size + "px"; }
+            p.style.left = rnd(0, 100).toFixed(1) + "%";
+            if (cfg.dir === "twinkle") p.style.top = rnd(0, 92).toFixed(1) + "%";
+            p.style.animationName = "fx-" + cfg.dir;
+            p.style.animationDuration = rnd(cfg.dur[0], cfg.dur[1]).toFixed(1) + "s";
+            p.style.animationDelay = (-rnd(0, cfg.dur[1])).toFixed(1) + "s";
+            p.style.setProperty("--sway", rnd(-40, 40).toFixed(0) + "px");
+            box.appendChild(p);
+        }
     }
 
-    // Smooth "fake" progress while we wait, so the bar always feels alive
-    // even though real byte-level download progress isn't available for
-    // CSS background images.
+    function cachedTheme() {
+        try { return localStorage.getItem(CACHE_KEY); } catch (e) { return null; }
+    }
+    applyTheme(PREVIEW || cachedTheme() || DEFAULT_THEME); // vẽ ngay, chưa cần chờ mạng
+
+    /* ---------------- Trạng thái: tải /status.json + /moods.json ---------------- */
+    function isActive(status) {
+        if (!status || (!status.text && !status.mood)) return false;
+        if (!status.expires) return true;
+        const t = new Date(status.expires).getTime();
+        return isNaN(t) || t > Date.now(); // hạn không đọc được thì coi như còn hạn
+    }
+    function themeFor(status, moods) {
+        if (status && THEMES.includes(status.loading)) return status.loading; // admin chọn cố định một theme
+        if (isActive(status) && status.mood) {
+            const m = (moods.moods || []).find((x) => x.id === status.mood);
+            if (m && THEMES.includes(m.theme)) return m.theme;
+        }
+        return DEFAULT_THEME;
+    }
+    const getJson = (url) => fetch(url, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    const statusReady = Promise.all([getJson("/status.json"), getJson("/moods.json")]).then(([status, moods]) => ({ status: status || {}, moods: moods || { moods: [] } }));
+    window.SiteStatus = statusReady;
+
+    statusReady.then(({ status, moods }) => {
+        if (!PREVIEW) {
+            const t = themeFor(status, moods);
+            try { localStorage.setItem(CACHE_KEY, t); } catch (e) { /* bỏ qua */ }
+            applyTheme(t);
+        }
+        const start = () => showBubble(status, moods);
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+        else start();
+    });
+
+    async function showBubble(status, moods) {
+        const wrap = document.querySelector(".avatar-wrap");
+        if (!wrap || !isActive(status) || wrap.querySelector(".status-bubble")) return;
+        const mood = (moods.moods || []).find((x) => x.id === status.mood);
+        let text = (status.text || "").trim();
+        if (!text && mood) { // có cảm xúc mà không có lời → "Tên đang cảm thấy …"
+            let name = "Shinju Ch.";
+            try { const d = await (await fetch("/data.json")).json(); name = (d.profile && d.profile.name) || name; } catch (e) { /* dùng tên mặc định */ }
+            text = `${name} ${mood.phrase}`;
+        }
+        if (!text) return;
+        const b = document.createElement("div");
+        b.className = "status-bubble";
+        b.setAttribute("role", "status");
+        if (mood) { const i = document.createElement("span"); i.className = "sb-icon"; i.textContent = mood.icon; b.appendChild(i); }
+        const t = document.createElement("span");
+        t.textContent = text; // textContent: không chèn HTML từ nội dung status
+        b.appendChild(t);
+        wrap.classList.add("has-status");
+        wrap.insertBefore(b, wrap.firstChild);
+    }
+
+    /* ---------------- Tiến trình và ẩn màn hình chờ ---------------- */
     let fakeProgress = 0;
     const tick = setInterval(() => {
         fakeProgress = Math.min(fakeProgress + (90 - fakeProgress) * 0.12, 90);
@@ -56,7 +127,7 @@
     }, 120);
 
     function finish() {
-        if (finished) return;
+        if (finished || PREVIEW) return; // xem thử theme: giữ màn hình chờ
         finished = true;
         clearInterval(tick);
         if (fill) fill.style.width = "100%";
@@ -71,13 +142,12 @@
             if (!url) return resolve();
             const img = new Image();
             img.onload = () => resolve();
-            img.onerror = () => resolve(); // never block on a broken image
+            img.onerror = () => resolve(); // không bao giờ chặn vì một ảnh hỏng
             img.src = url;
         });
     }
 
-    // Whatever background-image the page's own CSS resolved to for the
-    // current screen size (bgpc/bgpad/bgphone, any file extension).
+    // Ảnh nền mà CSS của trang đang dùng cho cỡ màn hình hiện tại (bgpc/bgpad/bgphone, mọi đuôi file)
     function currentBackgroundUrl() {
         const bg = getComputedStyle(document.body).backgroundImage;
         const match = bg && bg.match(/url\(["']?([^"')]+)["']?\)/);
@@ -87,19 +157,16 @@
     tasks.push(loadImage(currentBackgroundUrl()));
 
     window.SiteLoading = {
-        // Page scripts call this for any extra image that loads
-        // dynamically (e.g. the avatar, whose real src only becomes known
-        // after data.json arrives).
+        // Trang gọi hàm này cho ảnh nạp động (ví dụ avatar, chỉ biết URL sau khi data.json về)
         waitFor(url) {
             tasks.push(loadImage(url));
         },
-        // Call once the page has queued everything above — resolves and
-        // hides the overlay once all of it has loaded.
+        // Gọi khi trang đã xếp xong mọi thứ cần chờ
         ready() {
             Promise.all(tasks).then(finish);
         },
     };
 
-    // Safety net: never block the page forever if something goes wrong.
+    // Lưới an toàn: không bao giờ chặn trang vô hạn
     setTimeout(finish, 8000);
 })();
