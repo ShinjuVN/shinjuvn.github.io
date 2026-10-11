@@ -19,8 +19,10 @@
   },
   "theme": {
     "default": "snow",
+    "intensity": 0.7,
+    "forceMotion": true,
     "pages": {
-      "home": "",
+      "home": "snow",
       "post": "fireflies",
       "download": "aurora",
       "channel": "stars",
@@ -53,8 +55,8 @@
         "keywords": "tải xuống, download, Shinju Ch."
       },
       "channel": {
-        "title": "Shinju Ch. — Channel",
-        "description": "Các kênh mạng xã hội của Shinju Ch.: YouTube và các nền tảng khác.",
+        "title": "Shinju Ch. Channel",
+        "description": "Các kênh mạng xã hội của Shinju Ch.\nYouTube và các nền tảng khác.",
         "keywords": "Shinju Ch., ShinjuVNer, YouTube, mạng xã hội"
       },
       "donate": {
